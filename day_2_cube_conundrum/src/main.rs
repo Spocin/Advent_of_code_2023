@@ -1,10 +1,6 @@
 use std::fs;
 use std::path::Path;
 
-const MAX_RED: u32 = 12;
-const MAX_GREEN: u32 = 13;
-const MAX_BLUE: u32 = 14;
-
 const PATH_TO_INPUT: &str = "C:\\Users\\Spocin\\IdeaProjects\\Advent_of_code_2023\\day_2_cube_conundrum\\resources\\input.txt";
 
 fn main() {
@@ -18,24 +14,27 @@ fn main() {
             let sections: Vec<&str> = line.split(":").collect();
             let draws: Vec<&str> = sections[1].split(";").map(|draw| draw.trim()).collect();
 
+            let mut max_red = 0;
+            let mut max_green = 0;
+            let mut max_blue = 0;
+
             for draw in draws {
                 let results: Vec<&str> = draw.split(",").map(|result| result.trim()).collect();
 
                 for result in results {
-                    let amount = result.split(" ").collect::<Vec<&str>>()[0];
+                    let amount = result.split(" ").collect::<Vec<&str>>()[0].parse::<u32>().unwrap();
                     let color = result.split(" ").collect::<Vec<&str>>()[1];
 
                     match color {
-                        "red" => if amount.parse::<u32>().unwrap() > MAX_RED { return 0; },
-                        "green" => if amount.parse::<u32>().unwrap() > MAX_GREEN { return 0; },
-                        "blue" => if amount.parse::<u32>().unwrap() > MAX_BLUE { return 0; },
+                        "red" => if amount > max_red { max_red = amount; },
+                        "green" => if amount > max_green { max_green = amount; },
+                        "blue" => if amount > max_blue { max_blue = amount; },
                         _ => panic!("Unknown color!")
                     }
                 }
             }
 
-            let game_num = sections[0].strip_prefix("Game ").unwrap();
-            return game_num.parse::<u32>().unwrap();
+            return max_red * max_green * max_blue;
         })
         .sum();
 
