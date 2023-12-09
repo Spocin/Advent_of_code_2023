@@ -34,9 +34,6 @@ fn process_card(line: &&str, line_idx: usize, lines: &Vec<&str>) -> u32 {
 
     let copies = &lines[line_idx+1..=line_idx+sum as usize];
 
-    println!("Copies for {}", line);
-    copies.iter().for_each(|copy| println!("\t{}", copy));
-
     for (copy_idx, copy) in copies.iter().enumerate() {
         sum += process_card(copy, line_idx+copy_idx+1, &lines);
     }
