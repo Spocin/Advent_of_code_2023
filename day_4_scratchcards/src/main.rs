@@ -1,7 +1,7 @@
 mod day_4;
 
 fn main() {
-    let input = day_4::TEST_INPUT;
+    let input = day_4::INPUT;
 
     let lines: Vec<&str> = input.lines().collect();
     let sum: u32 = lines.iter().enumerate().map(|(line_idx, line)| process_card(line, line_idx, &lines)).sum();
