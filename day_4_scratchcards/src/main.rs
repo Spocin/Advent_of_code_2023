@@ -1,7 +1,11 @@
-mod day_4;
+use std::fs;
+use std::path::Path;
+
+const PATH_TO_INPUT: &str = "./day_4_scratchcards/resources/input.txt";
 
 fn main() {
-    let input = day_4::INPUT;
+    let path = Path::new(PATH_TO_INPUT);
+    let input = fs::read_to_string(path).expect("Something wrong with path!");
 
     let lines: Vec<&str> = input.lines().collect();
     let sum: u32 = lines.iter().enumerate().map(|(line_idx, line)| process_card(line, line_idx, &lines)).sum();
