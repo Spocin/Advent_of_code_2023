@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-const PATH_TO_INPUT: &str = "C:\\Users\\Spocin\\IdeaProjects\\Advent_of_code_2023\\day_1_trebuchet\\resources\\input_part_two.txt";
+const PATH_TO_INPUT: &str = "./day_1_trebuchet/resources/input_part_two.txt";
 
 const DIGITS_SPELLED: [(&str, char); 9] = [
     ("one", '1'),

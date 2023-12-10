@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-const PATH_TO_INPUT: &str = "C:\\Users\\Spocin\\IdeaProjects\\Advent_of_code_2023\\day_2_cube_conundrum\\resources\\input.txt";
+const PATH_TO_INPUT: &str = "./day_2_cube_conundrum/resources/input.txt";
 
 fn main() {
     println!("Loading file from {}", PATH_TO_INPUT);
