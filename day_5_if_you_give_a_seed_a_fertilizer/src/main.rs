@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-const INPUT: &str = "./day_5_if_you_give_a_seed_a_fertilizer/resources/test_input.txt";
+const INPUT: &str = "./day_5_if_you_give_a_seed_a_fertilizer/resources/input.txt";
 
 fn main() {
     println!("Loading file from {}", INPUT);
@@ -34,15 +34,16 @@ fn main() {
             let mut seed_tmp = seed;
             for steps_map in &steps_maps {
                 match steps_map.get(&seed_tmp) {
-                    None => { continue; }
+                    None => {
+                        continue;
+                    }
                     Some(val) => {
-                        println!("\tChanged tmp: {} -> {}", seed_tmp, val);
                         seed_tmp = *val;
                     }
                 }
             }
 
-            return seed;
+            return seed_tmp;
         })
         .min()
         .unwrap();
@@ -51,6 +52,7 @@ fn main() {
 }
 
 fn str_to_step_map(step_str: &[&str]) -> HashMap<u32, u32> {
+    println!("Building map for: {}", step_str[1]);
     let step_maps: Vec<[u32; 3]> = step_str.iter()
         .skip(1)
         .map(|line|
@@ -69,6 +71,7 @@ fn str_to_step_map(step_str: &[&str]) -> HashMap<u32, u32> {
     let folded_map: HashMap<u32, u32> = step_maps
         .iter()
         .fold(HashMap::new(), |mut acc, map| {
+            println!("Map: {} {} {}", map[0], map[1], map[2]);
             for idx in 0..map[2] {
                 acc.insert(map[1]+idx, map[0]+idx);
             }
