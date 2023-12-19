@@ -2,11 +2,9 @@ use std::fs;
 use std::path::Path;
 use iterchunks::IterArrayChunks;
 
-const INPUT: &str = "./day_5_if_you_give_a_seed_a_fertilizer/resources/test_input.txt";
+const INPUT: &str = "./day_5_if_you_give_a_seed_a_fertilizer/resources/input.txt";
 
 fn main() {
-    println!("Loading file from {}", INPUT);
-
     let path = Path::new(INPUT);
     let input = fs::read_to_string(path).expect("Something wrong with path!");
 
@@ -43,20 +41,15 @@ fn main() {
         .map(|&seed| {
             let mut input = seed;
 
-            println!("Initial input: {}", input);
-
             for steps_map in &steps_maps {
                 for [dest_start, source_start , length] in steps_map.iter().array_chunks() {
                     //When input is not in range go to the next line
                     if input <= *source_start || input >= *source_start + *length {
-                        println!("\tContinue without change: {}", input);
                         continue;
                     }
 
                     input = *dest_start + (input - *source_start);
-                    println!("\tReplaced input to: {}", input);
                 }
-                println!();
             }
 
             return input;
