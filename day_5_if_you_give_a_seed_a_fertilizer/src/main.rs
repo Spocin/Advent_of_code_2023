@@ -1,8 +1,8 @@
-use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
+use iterchunks::IterArrayChunks;
 
-const INPUT: &str = "./day_5_if_you_give_a_seed_a_fertilizer/resources/input.txt";
+const INPUT: &str = "./day_5_if_you_give_a_seed_a_fertilizer/resources/test_input.txt";
 
 fn main() {
     println!("Loading file from {}", INPUT);
@@ -20,64 +20,49 @@ fn main() {
         .map(|seed_str| seed_str.parse::<u32>().unwrap())
         .collect();
 
-    let steps_maps: [HashMap<u32, u32>; 7] = lines[2..]
+    let steps_maps: [Vec<u32>; 7] = lines[2..]
         .split(|&line| line.eq(""))
-        .map(|step| str_to_step_map(&step))
-        .collect::<Vec<HashMap<u32,u32>>>()
+        .map(|step| {
+            let mut step_params: Vec<u32> = vec![];
+
+            for line in step.iter().skip(1) {
+                line.trim()
+                    .split(" ")
+                    .map(|line_params| line_params.parse::<u32>().unwrap())
+                    .for_each(|param| step_params.push(param));
+            }
+
+            return step_params;
+        })
+        .collect::<Vec<Vec<u32>>>()
         .try_into()
         .unwrap();
 
     let min_location: u32 = seeds
         .iter()
         .map(|&seed| {
-            println!("Search for: {}", seed);
-            let mut seed_tmp = seed;
+            let mut input = seed;
+
+            println!("Initial input: {}", input);
+
             for steps_map in &steps_maps {
-                match steps_map.get(&seed_tmp) {
-                    None => {
+                for [dest_start, source_start , length] in steps_map.iter().array_chunks() {
+                    //When input is not in range go to the next line
+                    if input <= *source_start || input >= *source_start + *length {
+                        println!("\tContinue without change: {}", input);
                         continue;
                     }
-                    Some(val) => {
-                        seed_tmp = *val;
-                    }
+
+                    input = *dest_start + (input - *source_start);
+                    println!("\tReplaced input to: {}", input);
                 }
+                println!();
             }
 
-            return seed_tmp;
+            return input;
         })
         .min()
         .unwrap();
 
     println!("Smalled location nr: {}", min_location)
-}
-
-fn str_to_step_map(step_str: &[&str]) -> HashMap<u32, u32> {
-    println!("Building map for: {}", step_str[1]);
-    let step_maps: Vec<[u32; 3]> = step_str.iter()
-        .skip(1)
-        .map(|line|
-            line
-            .trim()
-            .split(" ")
-            .map(|num_as_str| num_as_str.parse::<u32>().unwrap())
-            .collect::<Vec<u32>>()
-            .try_into().unwrap()
-        )
-        .collect::<Vec<[u32; 3]>>()
-        .try_into()
-        .unwrap();
-
-    //Flatten maps
-    let folded_map: HashMap<u32, u32> = step_maps
-        .iter()
-        .fold(HashMap::new(), |mut acc, map| {
-            println!("Map: {} {} {}", map[0], map[1], map[2]);
-            for idx in 0..map[2] {
-                acc.insert(map[1]+idx, map[0]+idx);
-            }
-
-            return acc;
-        });
-
-    return folded_map;
 }
