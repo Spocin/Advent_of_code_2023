@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "arrays"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2dbdbb2877d26e0647c6b8125802b2ecf2dc2a28d864dde41e6f9b9a54da08fe"
+
+[[package]]
 name = "day_1_trebuchet"
 version = "0.1.0"
 
@@ -17,3 +23,24 @@ version = "0.1.0"
 [[package]]
 name = "day_5_if_you_give_a_seed_a_fertilizer"
 version = "0.1.0"
+dependencies = [
+ "iterchunks",
+]
+
+[[package]]
+name = "iterchunks"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f57789a2cbe6f5cfd9b9cd637bca8913b9dae1293a6bf4bb5ea83e5564a13cef"
+dependencies = [
+ "itermore",
+]
+
+[[package]]
+name = "itermore"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e59d52c01f0facb5dd95b889ba6ae459576781907cfd251361d8882c4305509"
+dependencies = [
+ "arrays",
+]
