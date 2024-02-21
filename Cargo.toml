@@ -1,3 +1,9 @@
 [workspace]
-members = ["day_1_trebuchet", "day_2_cube_conundrum", "day_3_gear_ratios"]
+members = [
+    "day_1_trebuchet",
+    "day_2_cube_conundrum",
+    "day_3_gear_ratios",
+    "day_4_scratchcards",
+    "day_6_wait_for_it"
+]
 resolver = "2"

@@ -13,3 +13,11 @@ version = "0.1.0"
 [[package]]
 name = "day_3_gear_ratios"
 version = "0.1.0"
+
+[[package]]
+name = "day_4_scratchcards"
+version = "0.1.0"
+
+[[package]]
+name = "day_6_wait_for_it"
+version = "0.1.0"
