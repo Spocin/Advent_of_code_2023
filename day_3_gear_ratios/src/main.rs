@@ -15,13 +15,37 @@ fn main() {
 
         let mut curr_idx: u32 = 0;
         while curr_idx < line.len() as u32 {
-            print!("{}", chars[curr_idx as usize]);
+            if !chars[curr_idx as usize].is_numeric() {
+                curr_idx += 1;
+                continue;
+            }
 
-            curr_idx += 1;
+            //Walk forward to check where num ends.
+            let found_num_as_string = build_number(&chars[curr_idx as usize..chars.len()]);
+            println!("Found num: {}", found_num_as_string);
+
+            // 1. Search for symbol around num
+                // 1.1. Parse string as u32
+                // 1.2. Add to sum
+
+            //+1 can be added here as we already checked it while building string
+            curr_idx += found_num_as_string.len() as u32 + 1;
         }
-
-        println!();
     }
 
     println!("Sum of parts {}", sum);
+}
+
+fn build_number(line: &[char]) -> String {
+    let mut num = String::from(line[0]);
+
+    for char in &line[1..line.len()] {
+        if char.is_numeric() {
+            num.push(*char);
+        } else {
+            break;
+        }
+    }
+
+    return num;
 }
