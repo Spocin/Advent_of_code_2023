@@ -1,7 +1,8 @@
 use std::fs;
 use std::path::Path;
+use std::str::from_utf8;
 
-const PATH_TO_INPUT: &str = "./day_3_gear_ratios/resources/input.txt";
+const PATH_TO_INPUT: &str = "./day_3_gear_ratios/resources/test_input.txt";
 
 fn main() {
     let path = Path::new(PATH_TO_INPUT);
@@ -15,104 +16,96 @@ fn main() {
 
         let mut curr_idx: u32 = 0;
         while curr_idx < line.len() as u32 {
-            if !chars[curr_idx as usize].is_numeric() {
+            if chars[curr_idx as usize] != '*' {
                 curr_idx += 1;
                 continue;
             }
 
-            //Walk forward to check where num ends.
-            let found_num_as_string = build_number(&chars[curr_idx as usize..chars.len()]);
-
-            if does_symbol_exists_around_num(
+            sum += walk_around_gear(
                 &lines,
                 line_idx,
                 curr_idx as usize,
-                (curr_idx + (found_num_as_string.len() as u32 - 1)) as usize,
-            ) {
-                sum += found_num_as_string.parse::<u32>().unwrap() as u64;
-            }
+            );
 
-            //+1 can be added here as we already checked it while building string
-            curr_idx += found_num_as_string.len() as u32 + 1;
+            //+2 can be added here as we already checked it while walking around gear
+            curr_idx += 2;
         }
     }
 
     println!("Sum of parts {}", sum);
 }
 
-fn build_number(line: &[char]) -> String {
-    let mut num = String::from(line[0]);
-
-    for char in &line[1..line.len()] {
-        if char.is_numeric() {
-            num.push(*char);
-        } else {
-            break;
-        }
-    }
-
-    return num;
-}
-
-fn does_symbol_exists_around_num(
+fn walk_around_gear(
     lines: &Vec<&str>,
     line_idx: usize,
-    num_start_idx: usize,
-    num_end_idx: usize,
-) -> bool {
-    let num_reaches_start_of_line = num_start_idx == 0;
-    let num_reaches_end_of_line = num_end_idx == lines[line_idx].len() - 1;
+    gear_idx: usize,
+) -> u64 {
+    let num_reaches_start_of_line = gear_idx == 0;
+    let num_reaches_end_of_line = gear_idx == lines[line_idx].len() - 1;
+
+    let check_start_idx = if !num_reaches_start_of_line { gear_idx - 1 } else { gear_idx };
+    let check_end_idx = if !num_reaches_end_of_line { gear_idx + 1 } else { gear_idx };
+
+    let mut numbers: Vec<&[u8]> = vec![];
 
     //Above
     if line_idx != 0 {
-        //Top left
-        if !num_reaches_start_of_line {
-            if is_symbol(&lines[line_idx - 1].as_bytes()[num_start_idx - 1]) { return true; }
-        }
+        let line = lines[line_idx - 1].as_bytes();
 
-        //Top
-        for char in &lines[line_idx - 1].as_bytes()[num_start_idx..=num_end_idx] {
-            if is_symbol(char) { return true; }
-        }
+        println!("Above");
+        numbers.append(&mut find_numbers(line, check_start_idx, check_end_idx));
 
-        //Top right
-        if !num_reaches_end_of_line {
-            if is_symbol(&lines[line_idx - 1].as_bytes()[num_end_idx + 1]) { return true; }
-        }
+        if numbers.len() > 2 { return 0; }
     }
 
     //Right
     if !num_reaches_end_of_line {
-        if is_symbol(&lines[line_idx].as_bytes()[num_end_idx + 1]) { return true; }
-    }
+        let line = &lines[line_idx].as_bytes()[gear_idx + 1..];
 
+        println!("Right");
+        numbers.append(&mut find_numbers(line, gear_idx + 1, line.len() - 1));
+
+        if numbers.len() > 2 { return 0; }
+    }
 
     //Below
     if line_idx != lines.len() - 1 {
-        //Bottom right
-        if !num_reaches_end_of_line {
-            if is_symbol(&lines[line_idx + 1].as_bytes()[num_end_idx + 1]) { return true; }
-        }
+        let line = lines[line_idx + 1].as_bytes();
 
-        //Bottom
-        for char in &lines[line_idx + 1].as_bytes()[num_start_idx..=num_end_idx] {
-            if is_symbol(char) { return true; }
-        }
+        println!("Below");
+        numbers.append(&mut find_numbers(line, check_start_idx, check_end_idx));
 
-        //Bottom left
-        if !num_reaches_start_of_line {
-            if is_symbol(&lines[line_idx + 1].as_bytes()[num_start_idx - 1]) { return true; }
-        }
+        if numbers.len() > 2 { return 0; }
     }
 
     //Left
     if !num_reaches_start_of_line {
-        if is_symbol(&lines[line_idx].as_bytes()[num_start_idx - 1]) { return true; }
+        let line = &lines[line_idx].as_bytes()[..= gear_idx - 1];
+
+        println!("Left");
+        numbers.append(&mut find_numbers(line, 0, gear_idx - 1));
     }
 
-    return false;
+    if numbers.len() != 2 { return 0; }
+
+    //Gear has 2 numbers around it. Multiply them.
+    return numbers
+        .iter()
+        .map(|bytes| from_utf8(bytes).unwrap())
+        .map(|string| string.parse::<u64>().unwrap())
+        .fold(0, |acc, num| acc * num);
 }
 
-fn is_symbol(symbol: &u8) -> bool {
-    return !symbol.is_ascii_digit() && *symbol != b'.'
+fn find_numbers(line: &[u8], start_idx: usize, end_idx: usize) -> Vec<&[u8]> {
+    println!("Line: {:?}", from_utf8(line).unwrap());
+    println!("StartIdx: {}", start_idx);
+    println!("EndIdx: {}", end_idx);
+    println!();
+
+    /* TODO
+    Implement method that will search for digit between start_idx and end_idx.
+    When encountered search for digits both ways in the given line.
+    */
+
+    return vec![];
 }
