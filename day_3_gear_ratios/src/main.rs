@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-const PATH_TO_INPUT: &str = "./day_3_gear_ratios/resources/test_input.txt";
+const PATH_TO_INPUT: &str = "./day_3_gear_ratios/resources/input.txt";
 
 fn main() {
     let path = Path::new(PATH_TO_INPUT);
@@ -88,7 +88,7 @@ fn does_symbol_exists_around_num(
 
 
     //Below
-    if line_idx != lines.len() {
+    if line_idx != lines.len() - 1 {
         //Bottom right
         if !num_reaches_end_of_line {
             if is_symbol(&lines[line_idx + 1].as_bytes()[num_end_idx + 1]) { return true; }
