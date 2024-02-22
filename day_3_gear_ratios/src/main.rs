@@ -22,11 +22,15 @@ fn main() {
 
             //Walk forward to check where num ends.
             let found_num_as_string = build_number(&chars[curr_idx as usize..chars.len()]);
-            println!("Found num: {}", found_num_as_string);
 
-            // 1. Search for symbol around num
-                // 1.1. Parse string as u32
-                // 1.2. Add to sum
+            if does_symbol_exists_around_num(
+                &lines,
+                lineIdx,
+                curr_idx as usize,
+                (curr_idx + found_num_as_string.len() as u32) as usize,
+            ) {
+                sum += found_num_as_string.parse::<u32>().unwrap() as u64;
+            }
 
             //+1 can be added here as we already checked it while building string
             curr_idx += found_num_as_string.len() as u32 + 1;
@@ -48,4 +52,13 @@ fn build_number(line: &[char]) -> String {
     }
 
     return num;
+}
+
+fn does_symbol_exists_around_num(
+    lines: &Vec<&str>,
+    line_idx: usize,
+    num_start_idx: usize,
+    num_end_idx: usize,
+) -> bool {
+    return true;
 }
