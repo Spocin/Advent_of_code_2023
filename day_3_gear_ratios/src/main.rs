@@ -10,7 +10,7 @@ fn main() {
     let lines = input.lines().collect::<Vec<&str>>();
     let mut sum: u64 = 0;
 
-    for (lineIdx, line) in lines.iter().enumerate() {
+    for (line_idx, line) in lines.iter().enumerate() {
         let chars = line.chars().collect::<Vec<char>>();
 
         let mut curr_idx: u32 = 0;
@@ -22,15 +22,13 @@ fn main() {
 
             //Walk forward to check where num ends.
             let found_num_as_string = build_number(&chars[curr_idx as usize..chars.len()]);
-            println!("Searching around: {}", found_num_as_string);
 
             if does_symbol_exists_around_num(
                 &lines,
-                lineIdx,
+                line_idx,
                 curr_idx as usize,
                 (curr_idx + (found_num_as_string.len() as u32 - 1)) as usize,
             ) {
-                println!("Added: {}", found_num_as_string);
                 sum += found_num_as_string.parse::<u32>().unwrap() as u64;
             }
 
@@ -73,7 +71,7 @@ fn does_symbol_exists_around_num(
         }
 
         //Top
-        for char in &lines[line_idx - 1].as_bytes()[num_start_idx..num_end_idx] {
+        for char in &lines[line_idx - 1].as_bytes()[num_start_idx..=num_end_idx] {
             if is_symbol(char) { return true; }
         }
 
@@ -97,7 +95,7 @@ fn does_symbol_exists_around_num(
         }
 
         //Bottom
-        for char in &lines[line_idx + 1].as_bytes()[num_start_idx..num_end_idx] {
+        for char in &lines[line_idx + 1].as_bytes()[num_start_idx..=num_end_idx] {
             if is_symbol(char) { return true; }
         }
 
