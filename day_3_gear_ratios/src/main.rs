@@ -22,13 +22,15 @@ fn main() {
 
             //Walk forward to check where num ends.
             let found_num_as_string = build_number(&chars[curr_idx as usize..chars.len()]);
+            println!("Searching around: {}", found_num_as_string);
 
             if does_symbol_exists_around_num(
                 &lines,
                 lineIdx,
                 curr_idx as usize,
-                (curr_idx + found_num_as_string.len() as u32) as usize,
+                (curr_idx + (found_num_as_string.len() as u32 - 1)) as usize,
             ) {
+                println!("Added: {}", found_num_as_string);
                 sum += found_num_as_string.parse::<u32>().unwrap() as u64;
             }
 
@@ -60,5 +62,59 @@ fn does_symbol_exists_around_num(
     num_start_idx: usize,
     num_end_idx: usize,
 ) -> bool {
-    return true;
+    let num_reaches_start_of_line = num_start_idx == 0;
+    let num_reaches_end_of_line = num_end_idx == lines[line_idx].len() - 1;
+
+    //Above
+    if line_idx != 0 {
+        //Top left
+        if !num_reaches_start_of_line {
+            if is_symbol(&lines[line_idx - 1].as_bytes()[num_start_idx - 1]) { return true; }
+        }
+
+        //Top
+        for char in &lines[line_idx - 1].as_bytes()[num_start_idx..num_end_idx] {
+            if is_symbol(char) { return true; }
+        }
+
+        //Top right
+        if !num_reaches_end_of_line {
+            if is_symbol(&lines[line_idx - 1].as_bytes()[num_end_idx + 1]) { return true; }
+        }
+    }
+
+    //Right
+    if !num_reaches_end_of_line {
+        if is_symbol(&lines[line_idx].as_bytes()[num_end_idx + 1]) { return true; }
+    }
+
+
+    //Below
+    if line_idx != lines.len() {
+        //Bottom right
+        if !num_reaches_end_of_line {
+            if is_symbol(&lines[line_idx + 1].as_bytes()[num_end_idx + 1]) { return true; }
+        }
+
+        //Bottom
+        for char in &lines[line_idx + 1].as_bytes()[num_start_idx..num_end_idx] {
+            if is_symbol(char) { return true; }
+        }
+
+        //Bottom left
+        if !num_reaches_start_of_line {
+            if is_symbol(&lines[line_idx + 1].as_bytes()[num_start_idx - 1]) { return true; }
+        }
+    }
+
+    //Left
+    if !num_reaches_start_of_line {
+        if is_symbol(&lines[line_idx].as_bytes()[num_start_idx - 1]) { return true; }
+    }
+
+    return false;
+}
+
+fn is_symbol(symbol: &u8) -> bool {
+    return !symbol.is_ascii_digit() && *symbol != b'.'
 }
