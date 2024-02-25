@@ -98,8 +98,8 @@ fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: us
     //    *......
     if start_idx == 0 {
         match (line[start_idx].is_ascii_digit(), search_for_digit(&line[1..])) {
-            (true, Some(v)) => numbers.push(&line[start_idx..=v]),
-            (false, Some(v)) => numbers.push(&line[1..=v]),
+            (true, Some(v)) => numbers.push(&line[start_idx..=end_idx + v]),
+            (false, Some(v)) => numbers.push(&line[1..=end_idx + v]),
             (true, None) => numbers.push(&line[start_idx..=start_idx]),
             (_, _) => {}
         }
@@ -111,8 +111,8 @@ fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: us
     //    ......*
     if end_idx == line.len() - 1 {
         match (line[end_idx].is_ascii_digit(), search_for_digit_reversed(&line[..end_idx - 1])) {
-            (true, Some(v)) => numbers.push(&line[v..]),
-            (false, Some(v)) => numbers.push(&line[v..end_idx - 1]),
+            (true, Some(v)) => numbers.push(&line[start_idx - v..]),
+            (false, Some(v)) => numbers.push(&line[start_idx - v..end_idx - 1]),
             (true, None) => numbers.push(&line[end_idx..=end_idx]),
             (_,_) => {}
         }
@@ -126,12 +126,12 @@ fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: us
     //    ....*....
     if !line[start_idx + 1].is_ascii_digit() {
         match search_for_digit(&line[end_idx..]) {
-            Some(v) => numbers.push(&line[end_idx..=v]),
+            Some(v) => numbers.push(&line[end_idx..=end_idx + v]),
             _ => {},
         }
 
         match search_for_digit_reversed(&line[..=start_idx]) {
-            Some(v) => numbers.push(&line[v..=start_idx]),
+            Some(v) => numbers.push(&line[start_idx - v..=start_idx]),
             _ => {},
         }
         return;
@@ -174,9 +174,9 @@ fn search_for_digit(line: &[u8]) -> Option<usize> {
 fn search_for_digit_reversed(line: &[u8]) -> Option<usize> {
     if !line[line.len() - 1].is_ascii_digit() { return None; }
 
-    for (idx, char) in line[..=line.len() -1].iter().enumerate().rev() {
+    for (idx, char) in line[..=line.len() - 1].iter().enumerate().rev() {
         if !char.is_ascii_digit() { return Some(idx + 1)}
     }
 
-    return Some(line.len() + 1);
+    return Some(0);
 }
