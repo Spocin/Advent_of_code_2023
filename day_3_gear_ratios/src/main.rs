@@ -89,7 +89,7 @@ fn walk_around_gear(
         .iter()
         .map(|bytes| from_utf8(bytes).unwrap())
         .map(|string| string.parse::<u64>().unwrap())
-        .fold(0, |acc, num| acc * num);
+        .fold(1, |acc, num| acc * num);
 }
 
 fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: usize, end_idx: usize) {
@@ -131,7 +131,7 @@ fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: us
         }
 
         match search_for_digit_reversed(&line[..=start_idx]) {
-            Some(v) => numbers.push(&line[start_idx - v..=start_idx]),
+            Some(v) => numbers.push(&line[v..=start_idx]),
             _ => {},
         }
         return;
@@ -165,7 +165,7 @@ fn search_for_digit(line: &[u8]) -> Option<usize> {
     if !line[0].is_ascii_digit() { return None; }
 
     for (idx, char) in line[1..].iter().enumerate() {
-        if !char.is_ascii_digit() { return Some(idx - 1); }
+        if !char.is_ascii_digit() { return Some(idx); }
     }
 
     return Some(line.len() - 1);
