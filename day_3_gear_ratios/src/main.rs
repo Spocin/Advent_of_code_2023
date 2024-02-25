@@ -52,8 +52,7 @@ fn walk_around_gear(
     if line_idx != 0 {
         let line = lines[line_idx - 1].as_bytes();
 
-        println!("Above");
-        numbers.append(&mut find_numbers(line, check_start_idx, check_end_idx));
+        resolve_search(&mut numbers, line, check_start_idx, check_end_idx);
 
         if numbers.len() > 2 { return 0; }
     }
@@ -62,8 +61,7 @@ fn walk_around_gear(
     if !num_reaches_end_of_line {
         let line = &lines[line_idx].as_bytes()[gear_idx + 1..];
 
-        println!("Right");
-        numbers.append(&mut find_numbers(line, gear_idx + 1, line.len() - 1));
+        resolve_search(&mut numbers, line, 0, 0);
 
         if numbers.len() > 2 { return 0; }
     }
@@ -72,8 +70,7 @@ fn walk_around_gear(
     if line_idx != lines.len() - 1 {
         let line = lines[line_idx + 1].as_bytes();
 
-        println!("Below");
-        numbers.append(&mut find_numbers(line, check_start_idx, check_end_idx));
+        resolve_search(&mut numbers, line, check_start_idx, check_end_idx);
 
         if numbers.len() > 2 { return 0; }
     }
@@ -82,8 +79,7 @@ fn walk_around_gear(
     if !num_reaches_start_of_line {
         let line = &lines[line_idx].as_bytes()[..= gear_idx - 1];
 
-        println!("Left");
-        numbers.append(&mut find_numbers(line, 0, gear_idx - 1));
+        resolve_search(&mut numbers, line, gear_idx - 1, gear_idx - 1);
     }
 
     if numbers.len() != 2 { return 0; }
@@ -96,16 +92,91 @@ fn walk_around_gear(
         .fold(0, |acc, num| acc * num);
 }
 
-fn find_numbers(line: &[u8], start_idx: usize, end_idx: usize) -> Vec<&[u8]> {
-    println!("Line: {:?}", from_utf8(line).unwrap());
-    println!("StartIdx: {}", start_idx);
-    println!("EndIdx: {}", end_idx);
-    println!();
+fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: usize, end_idx: usize) {
+    //Search only right from start_idx
+    //Ex. 123....
+    //    *......
+    if start_idx == 0 {
+        match (line[start_idx].is_ascii_digit(), search_for_digit(&line[1..])) {
+            (true, Some(v)) => numbers.push(&line[start_idx..=v]),
+            (false, Some(v)) => numbers.push(&line[1..=v]),
+            (true, None) => numbers.push(&line[start_idx..=start_idx]),
+            (_, _) => {}
+        }
+        return;
+    }
 
-    /* TODO
-    Implement method that will search for digit between start_idx and end_idx.
-    When encountered search for digits both ways in the given line.
-    */
+    //Search only left from end_idx
+    //Ex. ....123
+    //    ......*
+    if end_idx == line.len() - 1 {
+        match (line[end_idx].is_ascii_digit(), search_for_digit_reversed(&line[..end_idx - 1])) {
+            (true, Some(v)) => numbers.push(&line[v..]),
+            (false, Some(v)) => numbers.push(&line[v..end_idx - 1]),
+            (true, None) => numbers.push(&line[end_idx..=end_idx]),
+            (_,_) => {}
+        }
+        return;
+    }
 
-    return vec![];
+    //When char at the same idx as gear is not a digit
+    //1. number can start at the left diagonal and go left
+    //2. number can start at the right diagonal and go right
+    //Ex. .123.123.
+    //    ....*....
+    if !line[start_idx + 1].is_ascii_digit() {
+        match search_for_digit(&line[end_idx..]) {
+            Some(v) => numbers.push(&line[end_idx..=v]),
+            _ => {},
+        }
+
+        match search_for_digit_reversed(&line[..=start_idx]) {
+            Some(v) => numbers.push(&line[v..=start_idx]),
+            _ => {},
+        }
+        return;
+    }
+
+    //When char at the same idx as gear is a digit we need to search from idx of a gear both ways
+    //Ex. ...123...
+    //    ....*....
+    if line[start_idx + 1].is_ascii_digit() {
+        let mut l_ptr = start_idx;
+        let mut r_ptr = end_idx;
+
+        while line[l_ptr].is_ascii_digit() {
+            l_ptr -= 1;
+        }
+
+        while line[r_ptr].is_ascii_digit() {
+            r_ptr += 1;
+        }
+
+        match (l_ptr == start_idx, r_ptr == end_idx) {
+            (true, true) => numbers.push(&line[start_idx + 1..=end_idx - 1]),
+            (true, false) => numbers.push(&line[start_idx + 1..r_ptr]),
+            (false, true) => numbers.push(&line[l_ptr + 1..=end_idx - 1]),
+            (false, false) => numbers.push(&line[l_ptr + 1..=r_ptr])
+        }
+    }
+}
+
+fn search_for_digit(line: &[u8]) -> Option<usize> {
+    if !line[0].is_ascii_digit() { return None; }
+
+    for (idx, char) in line[1..].iter().enumerate() {
+        if !char.is_ascii_digit() { return Some(idx - 1); }
+    }
+
+    return Some(line.len() - 1);
+}
+
+fn search_for_digit_reversed(line: &[u8]) -> Option<usize> {
+    if !line[line.len() - 1].is_ascii_digit() { return None; }
+
+    for (idx, char) in line[..=line.len() -1].iter().enumerate().rev() {
+        if !char.is_ascii_digit() { return Some(idx + 1)}
+    }
+
+    return Some(line.len() + 1);
 }
