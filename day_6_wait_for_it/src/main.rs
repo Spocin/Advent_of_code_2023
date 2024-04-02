@@ -3,15 +3,21 @@ use std::path::Path;
 
 const PATH_TO_INPUT: &str = "./day_6_wait_for_it/resources/input.txt";
 
+fn main() {
+    let path = Path::new(PATH_TO_INPUT);
+    let wining_combinations_count = find_combinations_to_win_race(path);
+
+    println!("Results multiplied: {}", wining_combinations_count);
+}
+
 #[derive(Debug)]
 struct RaceDescription {
     race_length: u64,
     distance_to_beat: u64,
 }
 
-fn main() {
-    let path = Path::new(PATH_TO_INPUT);
-    let input = fs::read_to_string(path).expect("Something wrong with path!");
+fn find_combinations_to_win_race(path_to_input: &Path) -> i32 {
+    let input = fs::read_to_string(path_to_input).expect("Something wrong with path!");
 
     /* Split by whitespace. Parse to u32 */
     let races_parsed: [u64; 2] = input
@@ -40,5 +46,5 @@ fn main() {
         }
     }
 
-    println!("Results multiplied: {}", wining_combinations_count);
+    return wining_combinations_count;
 }
