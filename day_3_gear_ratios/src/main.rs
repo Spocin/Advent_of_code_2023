@@ -2,7 +2,7 @@ use std::fs;
 use std::path::Path;
 use std::str::from_utf8;
 
-const PATH_TO_INPUT: &str = "./day_3_gear_ratios/resources/test_input.txt";
+const PATH_TO_INPUT: &str = "./day_3_gear_ratios/resources/input.txt";
 
 fn main() {
     let path = Path::new(PATH_TO_INPUT);
@@ -88,7 +88,15 @@ fn walk_around_gear(
     return numbers
         .iter()
         .map(|bytes| from_utf8(bytes).unwrap())
-        .map(|string| string.parse::<u64>().unwrap())
+        .map(|string| {
+            print!("{} ", string);
+
+            match string.parse::<u64>() {
+                Ok(res) => { return res; }
+                Err(err) => { }
+            }
+            return 1;
+        })
         .fold(1, |acc, num| acc * num);
 }
 
@@ -96,7 +104,7 @@ fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: us
     //Search only right from start_idx
     //Ex. 123....
     //    *......
-    if start_idx == 0 {
+    if start_idx == 0 { //TODO Error is here. Trying to check for "right" idx 0 and idx 1 when only 0 should be checked
         match (line[start_idx].is_ascii_digit(), search_for_digit(&line[1..])) {
             (true, Some(v)) => numbers.push(&line[start_idx..=end_idx + v]),
             (false, Some(v)) => numbers.push(&line[1..=end_idx + v]),
@@ -156,7 +164,7 @@ fn resolve_search<'a>(numbers: &mut Vec<&'a [u8]>, line: &'a [u8], start_idx: us
             (true, true) => numbers.push(&line[start_idx + 1..=end_idx - 1]),
             (true, false) => numbers.push(&line[start_idx + 1..r_ptr]),
             (false, true) => numbers.push(&line[l_ptr + 1..=end_idx - 1]),
-            (false, false) => numbers.push(&line[l_ptr + 1..=r_ptr])
+            (false, false) => numbers.push(&line[l_ptr + 1..r_ptr])
         }
     }
 }
