@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum HandTypes {
     FiveOfAKind = 7,
     FourOfAKind = 6,
@@ -8,6 +9,7 @@ pub enum HandTypes {
     HighCard = 1,
 }
 
+#[derive(Debug)]
 pub struct PokerHand {
     pub bid: u16,
     pub cards: [char; 5],
@@ -26,5 +28,19 @@ impl PokerHand {
     fn compute_hand_type_from_cards(cards: &[char; 5]) -> HandTypes {
         // TODO Compute HandType
         return HandTypes::FiveOfAKind
+    }
+}
+
+impl PartialEq for PokerHand {
+    fn eq(&self, other: &Self) -> bool {
+        if self.bid != other.bid {
+            return false;
+        }
+
+        if self.cards != other.cards {
+            return false;
+        }
+
+        return true;
     }
 }

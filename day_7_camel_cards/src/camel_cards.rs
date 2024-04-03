@@ -71,6 +71,10 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
 }
 
 fn parse_line_into_card(line: &str) -> Result<PokerHand, (&str, String)> {
+    /*  FIXME
+    *    Should this logic be inside PokerHand struct?
+    *    Having outside of the struct allows call for new with invalid parameters.
+    */
     let line_split = match line.split_once(" ") {
         None => return Err((line, "No space to split by".into())),
         Some(val) => val
@@ -155,6 +159,7 @@ mod calculate_total_winnings {
 #[cfg(test)]
 mod parse_line_into_card {
     use crate::camel_cards::{ALLOWED_CARD_LABELS, parse_line_into_card};
+    use crate::camel_cards::poker_hand::PokerHand;
 
     #[test]
     fn it_should_return_err_when_line_has_no_space() {
@@ -194,5 +199,15 @@ mod parse_line_into_card {
 
         let message = "Could not parse bid: 65536 to u16. number too large to fit in target type";
         assert_eq!(result.err().unwrap(), (mock_line, message.into()));
+    }
+
+    #[test]
+    fn it_should_return_hand() {
+        let mock_line = "QT9KK 65535";
+
+        let result = parse_line_into_card(mock_line).unwrap();
+
+        let expected_hand = PokerHand::new(65535, ['Q', 'T', '9', 'K', 'K']);
+        assert_eq!(result, expected_hand);
     }
 }
