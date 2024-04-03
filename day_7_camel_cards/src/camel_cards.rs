@@ -106,7 +106,7 @@ fn parse_line_into_card(line: &str) -> Result<PokerHand, (&str, String)> {
 }
 
 #[cfg(test)]
-mod tests {
+mod calculate_total_winnings {
     use std::fs::{File, remove_file};
     use std::io::Write;
     use std::path::Path;
@@ -150,6 +150,11 @@ mod tests {
 
         calculate_total_winnings(test_file.path);
     }
+}
+
+#[cfg(test)]
+mod parse_line_into_card {
+    use crate::camel_cards::{ALLOWED_CARD_LABELS, parse_line_into_card};
 
     #[test]
     fn it_should_return_err_when_line_has_no_space() {
