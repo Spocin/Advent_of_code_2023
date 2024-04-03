@@ -38,7 +38,7 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
                 , idx, line_that_errored.1, line_that_errored.0),
                 Ok(val) => val,
             })
-            .collect::<Vec<&PokerHand>>()
+            .collect::<Vec<PokerHand>>()
     };
 
     // TODO Sort cards
@@ -61,18 +61,18 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
         )
 }
 
-fn parse_line_into_card(line: &str) -> Result<&PokerHand, (&str, &str)> {
+fn parse_line_into_card(line: &str) -> Result<PokerHand, (&str, String)> {
     let line_split = match line.split_once(" ") {
-        None => return Err((line, "No space to split by")),
+        None => return Err((line, "No space to split by".into())),
         Some(val) => val
     };
 
     if line_split.0.len() != 5 {
-        return Err((line, "Hand must have exactly 5 cards"));
+        return Err((line, "Hand must have exactly 5 cards".into()));
     }
     
     if !line_split.0.chars().all(|el| ALLOWED_CARD_LABELS.contains(&el)) {
-        let error = format!("Invalid card label. Must be one of: {:?}", ALLOWED_CARD_LABELS).as_str();
+        let error = format!("Invalid card label. Must be one of: {:?}", ALLOWED_CARD_LABELS);
         return Err((line, error))
     }
 
@@ -84,13 +84,13 @@ fn parse_line_into_card(line: &str) -> Result<&PokerHand, (&str, &str)> {
 
     let bid_parsed = match line_split.1.parse::<u16>() {
         Err(err) => {
-            let error = format!("Could not parse bid: {} to u16. {}", line_split.1, err).as_str();
+            let error = format!("Could not parse bid: {} to u16. {}", line_split.1, err);
             return Err((line, error))
         },
         Ok(val) => val
     };
 
-    return Ok(&PokerHand::new(
+    return Ok(PokerHand::new(
         bid_parsed,
         cards_parsed
     ));
