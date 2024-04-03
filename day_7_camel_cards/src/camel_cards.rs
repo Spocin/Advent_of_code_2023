@@ -111,7 +111,7 @@ mod tests {
     use std::io::Write;
     use std::path::Path;
 
-    use crate::camel_cards::calculate_total_winnings;
+    use crate::camel_cards::{ALLOWED_CARD_LABELS, calculate_total_winnings, parse_line_into_card};
 
     struct TestFile {
         path: &'static Path,
@@ -142,12 +142,52 @@ mod tests {
                                Error: \"No space to split by\"\n\
                                Line: InvalidData"
     )]
-    fn it_should_panic_with_when_parsing_card_fails() {
+    fn it_should_panic_when_parsing_card_fails() {
         let test_file = TestFile::new("../day_7_camel_cards/resources/test_input_mock.txt");
         let mut file = File::create(&test_file.path).unwrap();
 
         writeln!(file, "InvalidData").unwrap();
 
         calculate_total_winnings(test_file.path);
+    }
+
+    #[test]
+    fn it_should_return_err_when_line_has_no_space() {
+        let mock_line = "QT9KA116";
+
+        let result = parse_line_into_card(mock_line);
+
+        let message = "No space to split by";
+        assert_eq!(result.err().unwrap(), (mock_line, message.into()))
+    }
+
+    #[test]
+    fn it_should_return_err_when_hand_does_not_have_5_cards() {
+        let mock_line = "QT9K 116";
+
+        let result = parse_line_into_card(mock_line);
+
+        let message = "Hand must have exactly 5 cards";
+        assert_eq!(result.err().unwrap(), (mock_line, message.into()))
+    }
+
+    #[test]
+    fn it_should_return_err_when_hand_uses_not_allowed_char() {
+        let mock_line = "QT9KZ 116";
+
+        let result = parse_line_into_card(mock_line);
+
+        let message = format!("Invalid card label. Must be one of: {:?}", ALLOWED_CARD_LABELS);
+        assert_eq!(result.err().unwrap(), (mock_line, message));
+    }
+
+    #[test]
+    fn it_should_return_err_when_bid_wont_fit_in_u16() {
+        let mock_line = "QT9KK 65536";
+
+        let result = parse_line_into_card(mock_line);
+
+        let message = "Could not parse bid: 65536 to u16. number too large to fit in target type";
+        assert_eq!(result.err().unwrap(), (mock_line, message.into()));
     }
 }
