@@ -115,7 +115,7 @@ mod calculate_total_winnings {
     use std::io::Write;
     use std::path::Path;
 
-    use crate::camel_cards::{ALLOWED_CARD_LABELS, calculate_total_winnings, parse_line_into_card};
+    use crate::camel_cards::calculate_total_winnings;
 
     struct TestFile {
         path: &'static Path,
