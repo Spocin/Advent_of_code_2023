@@ -1,24 +1,45 @@
-#[derive(Debug)]
-#[derive(PartialEq)]
-pub enum HandTypes {
-    FiveOfAKind = 7,
-    FourOfAKind = 6,
-    FullHouse = 5,
-    ThreeOfAKind = 4,
-    TwoPair = 3,
-    OnePair = 2,
-    HighCard = 1,
+use std::cmp::Ordering;
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AllowedCardLabel {
+    A = 13,
+    K,
+    Q,
+    J,
+    T,
+    Nine,
+    Eight,
+    Seven,
+    Six,
+    Five,
+    Four,
+    Three,
+    Two
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum HandTypes {
+    FiveOfAKind = 7,
+    FourOfAKind,
+    FullHouse,
+    ThreeOfAKind,
+    TwoPair,
+    OnePair,
+    HighCard,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord)]
 pub struct PokerHand {
     pub bid: u16,
-    pub cards: [char; 5],
+    pub cards: [AllowedCardLabel; 5],
     pub hand_type: HandTypes
 }
 
 impl PokerHand {
-    pub fn new(bid: u16, cards: [char; 5]) -> PokerHand {
+    pub fn new(line: &str) -> PokerHand {
+        // TODO Move parsing line here
+        // TODO Match char from line to AllowedCardLabel
+
         PokerHand {
             bid,
             cards,
@@ -26,7 +47,7 @@ impl PokerHand {
         }
     }
 
-    fn compute_hand_type_from_cards(cards: &[char; 5]) -> HandTypes {
+    fn compute_hand_type_from_cards(cards: &[AllowedCardLabel; 5]) -> HandTypes {
         //Five of a kind
         if cards.iter().all(|&el| el == cards[0]) {
             return HandTypes::FiveOfAKind;
@@ -65,7 +86,7 @@ impl PokerHand {
         return HandTypes::HighCard;
     }
 
-    fn check_has_triplet(cards: &[char; 5]) -> bool {
+    fn check_has_triplet(cards: &[AllowedCardLabel; 5]) -> bool {
         for i in 0..3 {
             if cards.iter().filter(|&el| *el == cards[i]).count() == 3 {
                 return true;
@@ -75,9 +96,9 @@ impl PokerHand {
         return false;
     }
 
-    fn count_pairs(cards: &[char; 5]) -> u8 {
+    fn count_pairs(cards: &[AllowedCardLabel; 5]) -> u8 {
         let mut count = 0u8;
-        let mut cards: Vec<char> = cards.clone().to_vec();
+        let mut cards = cards.clone().to_vec();
 
         while cards.len() != 0 {
             let card_occurrence = cards.iter()
@@ -96,17 +117,46 @@ impl PokerHand {
     }
 }
 
-impl PartialEq for PokerHand {
+/*impl PartialEq<Self> for PokerHand {
     fn eq(&self, other: &Self) -> bool {
         if self.bid != other.bid {
             return false;
         }
 
-        if self.cards != other.cards {
-            return false;
+        for i in 0..self.cards.len() {
+            if self.cards[i] != other.cards[i] {
+                return false;
+            }
         }
 
         return true;
+    }
+}*/
+
+impl PartialOrd for PokerHand {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        if self.hand_type < other.hand_type {
+            return Some(Ordering::Less);
+        }
+
+        if self.hand_type > other.hand_type {
+            return Some(Ordering::Greater);
+        }
+
+        // Sequentially compare cards
+        let cards_iter = self.cards
+            .iter()
+            .zip(&other.cards)
+            .find_map(|(x,y)| {
+                if x < y { return Some(Ordering::Less); }
+                if x > y { return Some(Ordering::Greater); }
+                return None;
+            });
+
+        return match cards_iter {
+            Some(val) => Some(val),
+            None => Some(Ordering::Equal),
+        }
     }
 }
 

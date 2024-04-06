@@ -7,26 +7,10 @@ use crate::camel_cards::poker_hand::PokerHand;
 
 mod poker_hand;
 
-const ALLOWED_CARD_LABELS: [char; 13] = [
-    'A',
-    'K',
-    'Q',
-    'J',
-    'T',
-    '9',
-    '8',
-    '7',
-    '6',
-    '5',
-    '4',
-    '3',
-    '2',
-];
-
 pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
     let input = fs::read_to_string(path_to_input);
 
-    let cards = match input {
+    let mut cards = match input {
         Err(err) => panic!("Something wrong with the path! {:?}", err),
         Ok(input) => input
             .lines()
@@ -44,7 +28,18 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
             .collect::<Vec<PokerHand>>()
     };
 
-    // TODO Sort cards
+    println!("Cards:");
+    for card in &cards {
+        println!("{:?}", card);
+    }
+    println!();
+
+    cards.sort();
+
+    println!("Cards:");
+    for card in &cards {
+        println!("{:?}", card);
+    }
 
     return cards
         .iter()
@@ -71,10 +66,6 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
 }
 
 fn parse_line_into_card(line: &str) -> Result<PokerHand, (&str, String)> {
-    /*  FIXME
-    *    Should this logic be inside PokerHand struct?
-    *    Having outside of the struct allows call for new with invalid parameters.
-    */
     let line_split = match line.split_once(" ") {
         None => return Err((line, "No space to split by".into())),
         Some(val) => val
