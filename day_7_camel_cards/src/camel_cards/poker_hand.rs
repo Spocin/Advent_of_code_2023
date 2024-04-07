@@ -6,7 +6,6 @@ pub enum AllowedCardLabel {
     A = 13,
     K,
     Q,
-    J,
     T,
     Nine,
     Eight,
@@ -15,7 +14,8 @@ pub enum AllowedCardLabel {
     Five,
     Four,
     Three,
-    Two
+    Two,
+    J,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -58,7 +58,7 @@ impl PokerHand {
 
         let bid_parsed = match line_split.1.parse::<u32>() {
             Err(err) => {
-                let error = format!("Could not parse bid: {} to u16. {}", line_split.1, err);
+                let error = format!("Could not parse bid: {} to u32. {}", line_split.1, err);
                 return Err((line, error));
             }
             Ok(val) => val
@@ -223,11 +223,11 @@ mod poker_hand_new {
 
     #[test]
     fn it_should_return_err_when_bid_wont_fit_in_u16() {
-        let mock_line = "QT9KK 65536";
+        let mock_line = "QT9KK 4294967296";
 
         let result = PokerHand::new(mock_line);
 
-        let message = "Could not parse bid: 65536 to u16. number too large to fit in target type";
+        let message = "Could not parse bid: 4294967296 to u32. number too large to fit in target type";
         assert_eq!(result.err().unwrap(), (mock_line, message.into()));
     }
 
@@ -364,4 +364,6 @@ mod compute_hand_type_from_cards {
 
         assert_eq!(hand_type, HandTypes::HighCard);
     }
+
+
 }
