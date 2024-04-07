@@ -31,7 +31,7 @@ pub enum HandTypes {
 
 #[derive(Debug, PartialEq, Eq, Ord)]
 pub struct PokerHand {
-    pub bid: u16,
+    pub bid: u32,
     pub cards: [AllowedCardLabel; 5],
     pub hand_type: HandTypes,
 }
@@ -56,7 +56,7 @@ impl PokerHand {
             Err(err) => return Err((line, err)),
         };
 
-        let bid_parsed = match line_split.1.parse::<u16>() {
+        let bid_parsed = match line_split.1.parse::<u32>() {
             Err(err) => {
                 let error = format!("Could not parse bid: {} to u16. {}", line_split.1, err);
                 return Err((line, error));
