@@ -28,24 +28,13 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
             .collect::<Vec<PokerHand>>()
     };
 
-    println!("Cards:");
-    for card in &cards {
-        println!("{:?}", card);
-    }
-    println!();
-
     cards.sort();
-
-    println!("Cards:");
-    for card in &cards {
-        println!("{:?}", card);
-    }
 
     return cards
         .iter()
         .enumerate()
         .map(|(idx, hand)| {
-            let idx_casted = u16::try_from(idx);
+            let idx_casted = u32::try_from(idx);
             match idx_casted {
                 Err(err) => panic!("Error while casting idx to u16 {:?}", err),
                 Ok(val) => hand.bid * (val + 1)
