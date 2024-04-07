@@ -165,11 +165,11 @@ impl PokerHand {
 
 impl PartialOrd for PokerHand {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.hand_type < other.hand_type {
+        if self.hand_type > other.hand_type {
             return Some(Ordering::Less);
         }
 
-        if self.hand_type > other.hand_type {
+        if self.hand_type < other.hand_type {
             return Some(Ordering::Greater);
         }
 
@@ -178,8 +178,8 @@ impl PartialOrd for PokerHand {
             .iter()
             .zip(&other.cards)
             .find_map(|(x, y)| {
-                if x < y { return Some(Ordering::Less); }
-                if x > y { return Some(Ordering::Greater); }
+                if x < y { return Some(Ordering::Greater); }
+                if x > y { return Some(Ordering::Less); }
                 return None;
             });
 
