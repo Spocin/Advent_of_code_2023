@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::convert::Into;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AllowedCardLabel {
@@ -32,27 +33,50 @@ pub enum HandTypes {
 pub struct PokerHand {
     pub bid: u16,
     pub cards: [AllowedCardLabel; 5],
-    pub hand_type: HandTypes
+    pub hand_type: HandTypes,
 }
 
-impl PokerHand {
-    pub fn new(line: &str) -> PokerHand {
-        // TODO Move parsing line here
-        // TODO Match char from line to AllowedCardLabel
+const NO_SPACE_ERR: &str = "No space to split by";
+const INVALID_LENGTH_ERR: &str = "Hand must have exactly 5 cards";
+const INVALID_CARD_LABEL_ERR: &str = "Invalid card label";
 
-        PokerHand {
-            bid,
-            cards,
-            hand_type: Self::compute_hand_type_from_cards(&cards)
+impl PokerHand {
+    pub fn new(line: &str) -> Result<PokerHand, (&str, String)> {
+        let line_split = match line.split_once(" ") {
+            None => return Err((line, NO_SPACE_ERR.into())),
+            Some(val) => val
+        };
+
+        if line_split.0.len() != 5 {
+            return Err((line, INVALID_LENGTH_ERR.into()));
         }
+
+        let cards_parsed: [AllowedCardLabel; 5] = match Self::parse_card_label_to_enum_values(line_split.0) {
+            Ok(val) => val.try_into().unwrap(),
+            Err(err) => return Err((line, err)),
+        };
+
+        let bid_parsed = match line_split.1.parse::<u16>() {
+            Err(err) => {
+                let error = format!("Could not parse bid: {} to u16. {}", line_split.1, err);
+                return Err((line, error));
+            }
+            Ok(val) => val
+        };
+
+        return Ok(PokerHand {
+            bid: bid_parsed,
+            cards: cards_parsed.clone(),
+            hand_type: Self::compute_hand_type_from_cards(&cards_parsed),
+        });
     }
 
     fn compute_hand_type_from_cards(cards: &[AllowedCardLabel; 5]) -> HandTypes {
         //Five of a kind
-        if cards.iter().all(|&el| el == cards[0]) {
+        if cards.iter().all(|el| *el == cards[0]) {
             return HandTypes::FiveOfAKind;
         }
-        
+
         //Four of a kind
         for i in 0..3 {
             if cards.iter().filter(|&el| *el == cards[i]).count() == 4 {
@@ -82,7 +106,7 @@ impl PokerHand {
         if pairs_count == 1 {
             return HandTypes::OnePair;
         }
-        
+
         return HandTypes::HighCard;
     }
 
@@ -109,29 +133,35 @@ impl PokerHand {
                 count += 1;
             }
 
-            let tmp = cards[0];
-            cards.retain(|&el| el != tmp);
+            let tmp = cards[0].clone();
+            cards.retain(|el| *el != tmp);
         }
 
         return count;
     }
-}
 
-/*impl PartialEq<Self> for PokerHand {
-    fn eq(&self, other: &Self) -> bool {
-        if self.bid != other.bid {
-            return false;
-        }
-
-        for i in 0..self.cards.len() {
-            if self.cards[i] != other.cards[i] {
-                return false;
-            }
-        }
-
-        return true;
+    fn parse_card_label_to_enum_values(cards: &str) -> Result<Vec<AllowedCardLabel>, String> {
+        return cards
+            .chars()
+            .map(|el| match el {
+                'A' => Ok(AllowedCardLabel::A),
+                'K' => Ok(AllowedCardLabel::K),
+                'Q' => Ok(AllowedCardLabel::Q),
+                'J' => Ok(AllowedCardLabel::J),
+                'T' => Ok(AllowedCardLabel::T),
+                '9' => Ok(AllowedCardLabel::Nine),
+                '8' => Ok(AllowedCardLabel::Eight),
+                '7' => Ok(AllowedCardLabel::Seven),
+                '6' => Ok(AllowedCardLabel::Six),
+                '5' => Ok(AllowedCardLabel::Five),
+                '4' => Ok(AllowedCardLabel::Four),
+                '3' => Ok(AllowedCardLabel::Three),
+                '2' => Ok(AllowedCardLabel::Two),
+                _ => Err(INVALID_CARD_LABEL_ERR.into())
+            })
+            .collect::<Result<Vec<AllowedCardLabel>, String>>();
     }
-}*/
+}
 
 impl PartialOrd for PokerHand {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -147,7 +177,7 @@ impl PartialOrd for PokerHand {
         let cards_iter = self.cards
             .iter()
             .zip(&other.cards)
-            .find_map(|(x,y)| {
+            .find_map(|(x, y)| {
                 if x < y { return Some(Ordering::Less); }
                 if x > y { return Some(Ordering::Greater); }
                 return None;
@@ -156,17 +186,89 @@ impl PartialOrd for PokerHand {
         return match cards_iter {
             Some(val) => Some(val),
             None => Some(Ordering::Equal),
-        }
+        };
+    }
+}
+
+#[cfg(test)]
+mod poker_hand_new {
+    use crate::camel_cards::poker_hand::{AllowedCardLabel, INVALID_CARD_LABEL_ERR, INVALID_LENGTH_ERR, NO_SPACE_ERR, PokerHand};
+
+    #[test]
+    fn it_should_return_err_when_line_has_no_space() {
+        let mock_line = "QT9KA116";
+
+        let result = PokerHand::new(mock_line);
+
+        assert_eq!(result.err().unwrap(), (mock_line, NO_SPACE_ERR.into()))
+    }
+
+    #[test]
+    fn it_should_return_err_when_hand_does_not_have_5_cards() {
+        let mock_line = "QT9K 116";
+
+        let result = PokerHand::new(mock_line);
+
+        assert_eq!(result.err().unwrap(), (mock_line, INVALID_LENGTH_ERR.into()))
+    }
+
+    #[test]
+    fn it_should_return_err_when_hand_uses_not_allowed_char() {
+        let mock_line = "QT9KZ 116";
+
+        let result = PokerHand::new(mock_line);
+
+        assert_eq!(result.err().unwrap(), (mock_line, INVALID_CARD_LABEL_ERR.into()));
+    }
+
+    #[test]
+    fn it_should_return_err_when_bid_wont_fit_in_u16() {
+        let mock_line = "QT9KK 65536";
+
+        let result = PokerHand::new(mock_line);
+
+        let message = "Could not parse bid: 65536 to u16. number too large to fit in target type";
+        assert_eq!(result.err().unwrap(), (mock_line, message.into()));
+    }
+
+    #[test]
+    fn it_should_return_correct_hand_bid() {
+        let mock_line = "QT9KK 65535";
+
+        let result = PokerHand::new(mock_line);
+
+        assert_eq!(result.unwrap().bid, 65535);
+    }
+
+    #[test]
+    fn it_should_return_correct_cards() {
+        let mock_line = "QT9KK 65535";
+
+        let result = PokerHand::new(mock_line);
+
+        assert_eq!(result.unwrap().cards, [
+            AllowedCardLabel::Q,
+            AllowedCardLabel::T,
+            AllowedCardLabel::Nine,
+            AllowedCardLabel::K,
+            AllowedCardLabel::K
+        ])
     }
 }
 
 #[cfg(test)]
 mod compute_hand_type_from_cards {
-    use crate::camel_cards::poker_hand::{HandTypes, PokerHand};
+    use crate::camel_cards::poker_hand::{AllowedCardLabel, HandTypes, PokerHand};
 
     #[test]
     fn five_of_a_kind() {
-        let cards = ['A','A','A','A','A'];
+        let cards = [
+            AllowedCardLabel::A,
+            AllowedCardLabel::A,
+            AllowedCardLabel::A,
+            AllowedCardLabel::A,
+            AllowedCardLabel::A,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
@@ -175,7 +277,13 @@ mod compute_hand_type_from_cards {
 
     #[test]
     fn four_of_a_kind() {
-        let cards = ['A','A','8','A','A'];
+        let cards = [
+            AllowedCardLabel::A,
+            AllowedCardLabel::A,
+            AllowedCardLabel::Eight,
+            AllowedCardLabel::A,
+            AllowedCardLabel::A,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
@@ -184,7 +292,13 @@ mod compute_hand_type_from_cards {
 
     #[test]
     fn full_house() {
-        let cards = ['2','3','3','3','2'];
+        let cards = [
+            AllowedCardLabel::Two,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::Two,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
@@ -193,7 +307,13 @@ mod compute_hand_type_from_cards {
 
     #[test]
     fn three_of_a_kind() {
-        let cards = ['T','T','T','9','8'];
+        let cards = [
+            AllowedCardLabel::T,
+            AllowedCardLabel::T,
+            AllowedCardLabel::T,
+            AllowedCardLabel::Nine,
+            AllowedCardLabel::Eight,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
@@ -202,7 +322,13 @@ mod compute_hand_type_from_cards {
 
     #[test]
     fn two_pair() {
-        let cards = ['2','3','4','3','2'];
+        let cards = [
+            AllowedCardLabel::Two,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::Four,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::Two,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
@@ -211,7 +337,13 @@ mod compute_hand_type_from_cards {
 
     #[test]
     fn one_pair() {
-        let cards = ['A','2','3','A','4'];
+        let cards = [
+            AllowedCardLabel::A,
+            AllowedCardLabel::Two,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::A,
+            AllowedCardLabel::Four,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
@@ -220,7 +352,13 @@ mod compute_hand_type_from_cards {
 
     #[test]
     fn high_card() {
-        let cards = ['2','3','4','5','6'];
+        let cards = [
+            AllowedCardLabel::Two,
+            AllowedCardLabel::Three,
+            AllowedCardLabel::Four,
+            AllowedCardLabel::Five,
+            AllowedCardLabel::Six,
+        ];
 
         let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
 
