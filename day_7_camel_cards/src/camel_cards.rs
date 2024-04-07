@@ -35,9 +35,20 @@ pub fn calculate_total_winnings(path_to_input: &Path) -> u64 {
         .enumerate()
         .map(|(idx, hand)| {
             let idx_casted = u32::try_from(idx);
-            match idx_casted {
-                Err(err) => panic!("Error while casting idx to u16 {:?}", err),
-                Ok(val) => hand.bid * (val + 1)
+
+            let val = match idx_casted {
+                Err(err) => panic!("Error while casting idx to u32 {:?}", err),
+                Ok(val) => val
+            };
+
+            let val_plus = match val.checked_add(1) {
+                None => panic!("Error while adding one to val"),
+                Some(val) => val,
+            };
+
+            match hand.bid.checked_mul(val_plus) {
+                None => panic!("Error while multiplying bid by rank"),
+                Some(val) => val
             }
         })
         .fold(0u64, |acc, el|
