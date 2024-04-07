@@ -73,13 +73,18 @@ impl PokerHand {
 
     fn compute_hand_type_from_cards(cards: &[AllowedCardLabel; 5]) -> HandTypes {
         //Five of a kind
-        if cards.iter().all(|el| *el == cards[0]) {
+        if cards.iter().all(|el| *el == cards[0] || *el == AllowedCardLabel::J) {
             return HandTypes::FiveOfAKind;
         }
 
         //Four of a kind
         for i in 0..3 {
-            if cards.iter().filter(|&el| *el == cards[i]).count() == 4 {
+            let cards_count = cards
+                .iter()
+                .filter(|&el| *el == cards[i] || *el == AllowedCardLabel::J)
+                .count();
+
+            if cards_count == 4 {
                 return HandTypes::FourOfAKind;
             }
         }
@@ -112,7 +117,12 @@ impl PokerHand {
 
     fn check_has_triplet(cards: &[AllowedCardLabel; 5]) -> bool {
         for i in 0..3 {
-            if cards.iter().filter(|&el| *el == cards[i]).count() == 3 {
+            let cards_count = cards
+                .iter()
+                .filter(|&el| *el == cards[i] || *el == AllowedCardLabel::J)
+                .count();
+
+            if cards_count == 3 {
                 return true;
             }
         }
@@ -126,7 +136,7 @@ impl PokerHand {
 
         while cards.len() != 0 {
             let card_occurrence = cards.iter()
-                .filter(|&el| *el == cards[0])
+                .filter(|&el| *el == cards[0] || *el == AllowedCardLabel::J)
                 .count();
 
             if card_occurrence == 2 {
@@ -365,5 +375,18 @@ mod compute_hand_type_from_cards {
         assert_eq!(hand_type, HandTypes::HighCard);
     }
 
+    #[test]
+    fn four_of_a_kind_with_joker() {
+        let cards = [
+          AllowedCardLabel::Q,
+          AllowedCardLabel::J,
+          AllowedCardLabel::J,
+          AllowedCardLabel::Q,
+          AllowedCardLabel::Two,
+        ];
 
+        let hand_type = PokerHand::compute_hand_type_from_cards(&cards);
+
+        assert_eq!(hand_type, HandTypes::FourOfAKind);
+    }
 }

@@ -9,5 +9,5 @@ fn test_calculate_winnings() {
     let path = Path::new(PATH_TO_TEST_INPUT);
     let total_winnings = calculate_total_winnings(path);
 
-    assert_eq!(total_winnings, 6440);
+    assert_eq!(total_winnings, 5905);
 }
