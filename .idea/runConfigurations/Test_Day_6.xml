@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Day_4" type="CargoCommandRunConfiguration" factoryName="Cargo Command" folderName="Run Days">
-    <option name="command" value="run --bin day_4_scratchcards" />
+  <configuration default="false" name="Test Day_6" type="CargoCommandRunConfiguration" factoryName="Cargo Command" folderName="Test Days">
+    <option name="command" value="test --package day_6_wait_for_it" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <envs />
     <option name="emulateTerminal" value="true" />
