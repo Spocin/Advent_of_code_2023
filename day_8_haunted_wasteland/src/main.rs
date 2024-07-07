@@ -12,15 +12,19 @@ fn main() {
     let path = Path::new(PATH_TO_INPUT);
     let parsed_data = parse_input(path);
 
-    println!("Commands: [{}]\n{}", parsed_data.0.len(), parsed_data.0);
+    println!("Commands: [{}]", parsed_data.0.len());
+    println!("{:?}", parsed_data.0);
     println!();
     println!("Parsed coordinates: [{}]", parsed_data.1.len());
-    for coordinate in parsed_data.1 {
+    for coordinate in &parsed_data.1 {
         println!("{}", coordinate.1);
     }
+
+    let steps = count_steps_though_coordinates(parsed_data.0, parsed_data.1);
+    println!("Steps required to go through map: {}", steps);
 }
 
-fn parse_input(path_to_input: &Path) -> (String, HashMap<String, MapCoordinates>) {
+pub fn parse_input(path_to_input: &Path) -> (Vec<char>, HashMap<String, MapCoordinates>) {
     let input = fs::read_to_string(path_to_input);
 
     match input {
@@ -28,11 +32,11 @@ fn parse_input(path_to_input: &Path) -> (String, HashMap<String, MapCoordinates>
         Ok(input) => {
             let lines = input.lines().collect::<Vec<&str>>();
 
-            let commands: String = lines[0].into();
-
-            if let Some(inv_chars) = check_commands_syntax(&commands) {
+            if let Some(inv_chars) = check_commands_syntax(&lines[0]) {
                 panic!("Command contains invalid characters: {:?}", inv_chars);
             }
+
+            let commands = lines[0].chars().collect::<Vec<char>>();
 
             let coordinates_map = lines[2..].iter()
                 .fold(HashMap::new(), |mut acc, &el| {
@@ -46,29 +50,57 @@ fn parse_input(path_to_input: &Path) -> (String, HashMap<String, MapCoordinates>
             return (commands, coordinates_map);
         }
     }
+
+    fn check_commands_syntax(commands: &str) -> Option<Vec<char>> {
+        const ALLOWED_CHARS: [char; 2] = [
+            'R',
+            'L'
+        ];
+
+        let invalid_chars = commands
+            .chars()
+            .fold(vec![], |mut acc, el| {
+                if ALLOWED_CHARS.iter().any(|invalid_el| &el == invalid_el) {
+                    return acc;
+                }
+
+                acc.push(el);
+
+                return acc;
+            });
+
+        if invalid_chars.is_empty() {
+            return None;
+        }
+
+        return Some(invalid_chars);
+    }
 }
 
-fn check_commands_syntax(commands: &str) -> Option<Vec<char>> {
-    const ALLOWED_CHARS: [char; 2] = [
-        'R',
-        'L'
-    ];
+pub fn count_steps_though_coordinates(commands: Vec<char>, coordinates: HashMap<String, MapCoordinates>) -> u128 {
+    let mut count: u128 = 0;
 
-    let invalid_chars = commands
-        .chars()
-        .fold(vec![], |mut acc, el| {
-            if ALLOWED_CHARS.iter().any(|invalid_el| &el == invalid_el) {
-                return acc;
-            }
+    let mut tmp_coordinate  = "AAA";
+    let mut tmp_idx = 0;
+    while tmp_coordinate != "ZZZ" {
+        let curr_coords = coordinates.get(tmp_coordinate);
 
-            acc.push(el);
+        if curr_coords.is_none() { panic!("Can't find such coordinate name: {}", tmp_coordinate) }
 
-            return acc;
-        });
-
-    if invalid_chars.is_empty() {
-        return None;
+        match commands[tmp_idx] {
+            'L' => { tmp_coordinate = &curr_coords.unwrap().l_name },
+            'R' => {tmp_coordinate = &curr_coords.unwrap().r_name }
+            _ => panic!("Unknown command!"), /*TODO Parse commands into enum*/
+        }
+        
+        match tmp_idx {
+            x if x < commands.len() - 1 => { tmp_idx += 1; }
+            x if x == commands.len() - 1 => { tmp_idx = 0; }
+            _ => panic!("Unknown value of tmp_idx")
+        }
+        
+        count += 1;
     }
 
-    return Some(invalid_chars);
+    return count;
 }
