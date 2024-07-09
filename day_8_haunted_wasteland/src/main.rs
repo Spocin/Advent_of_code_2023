@@ -6,7 +6,7 @@ use crate::map_coordinates::MapCoordinates;
 
 mod map_coordinates;
 
-const PATH_TO_INPUT: &str = "day_8_haunted_wasteland/resources/test_input.txt";
+const PATH_TO_INPUT: &str = "day_8_haunted_wasteland/resources/input.txt";
 
 fn main() {
     let path = Path::new(PATH_TO_INPUT);
