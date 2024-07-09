@@ -6,7 +6,7 @@ use crate::map_coordinates::MapCoordinates;
 
 mod map_coordinates;
 
-const PATH_TO_INPUT: &str = "day_8_haunted_wasteland/resources/input.txt";
+const PATH_TO_INPUT: &str = "day_8_haunted_wasteland/resources/test_input.txt";
 
 fn main() {
     let path = Path::new(PATH_TO_INPUT);
@@ -80,7 +80,13 @@ pub fn parse_input(path_to_input: &Path) -> (Vec<char>, HashMap<String, MapCoord
 pub fn count_steps_though_coordinates(commands: Vec<char>, coordinates: HashMap<String, MapCoordinates>) -> u128 {
     let mut count: u128 = 0;
 
-    let mut tmp_coordinate  = "AAA";
+    let starting_nodes = coordinates
+        .iter()
+        .filter(|(key, _)| key.ends_with('A'))
+        .map(|(_,el)| el)
+        .collect::<Vec<_>>();
+
+    /*let mut tmp_coordinate  = "AAA";
     let mut tmp_idx = 0;
     while tmp_coordinate != "ZZZ" {
         let curr_coords = coordinates.get(tmp_coordinate);
@@ -100,7 +106,7 @@ pub fn count_steps_though_coordinates(commands: Vec<char>, coordinates: HashMap<
         }
         
         count += 1;
-    }
+    }*/
 
     return count;
 }
