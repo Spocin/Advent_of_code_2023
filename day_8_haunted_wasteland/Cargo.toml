@@ -8,9 +8,3 @@ log = "0.4.22"
 
 [profile.release]
 opt-level = 3
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-
-[build]
-rustflags = ["-C", "target-cpu=native"]

@@ -1,6 +1,11 @@
+use std::{fs, thread};
 use std::collections::HashMap;
-use std::fs;
 use std::path::Path;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, AtomicU64};
+use std::sync::atomic::Ordering::Relaxed;
+use std::thread::sleep;
+use std::time::Duration;
 
 use crate::map_coordinates::MapCoordinates;
 
@@ -77,8 +82,19 @@ pub fn parse_input(path_to_input: &Path) -> (Vec<char>, HashMap<String, MapCoord
     }
 }
 
-pub fn count_steps_though_coordinates(commands: Vec<char>, coordinates: HashMap<String, MapCoordinates>) -> u128 {
-    let mut count: u128 = 0;
+pub fn count_steps_though_coordinates(commands: Vec<char>, coordinates: HashMap<String, MapCoordinates>) -> u64 {
+    let count = Arc::new(AtomicU64::new(0));
+    let finished = Arc::new(AtomicBool::new(false));
+
+    let count_read = count.clone();
+    let finished_read = finished.clone();
+    let logger_thread = thread::spawn(move || {
+        while !finished_read.load(Relaxed) {
+            println!("Current count: {}", count_read.load(Relaxed));
+
+            sleep(Duration::from_secs(1));
+        }
+    });
 
     let mut starting_nodes = coordinates
         .iter()
@@ -103,10 +119,14 @@ pub fn count_steps_though_coordinates(commands: Vec<char>, coordinates: HashMap<
             _ => panic!("Unknown value of tmp_idx")
         }
 
-        count += 1;
+        count.fetch_add(1, Relaxed);
     }
 
-    return count;
+    finished.fetch_and(true, Relaxed);
+
+    logger_thread.join().unwrap();
+
+    return count.load(Relaxed);
 }
 
 fn are_all_nodes_end_with(nodes: &Vec<&MapCoordinates>, end_char: char) -> bool {
