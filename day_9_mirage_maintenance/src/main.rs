@@ -12,7 +12,7 @@ pub fn main() {
 
     let sum: i64 = data
         .iter()
-        .map(|line| compute_next_num(line))
+        .map(|line| compute_next_num(line.clone()))
         .sum();
 
     println!("Computed sum: {:?}", sum);
@@ -36,8 +36,8 @@ fn parse_input(path_to_input: &Path) -> Vec<Vec<i64>> {
 }
 
 //Computes next number of the given input
-pub fn compute_next_num(x: &[i64]) -> i64 {
-    let mut generations = vec![create_new_gen(x)];
+pub fn compute_next_num(x: Vec<i64>) -> i64 {
+    let mut generations = vec![x.clone(), create_new_gen(&x)];
 
     let mut curr_idx = generations.len() - 1;
     while !are_all_el_zero(&generations[curr_idx]) {
@@ -52,7 +52,9 @@ pub fn compute_next_num(x: &[i64]) -> i64 {
 
 //Based on given value creates new generation of values
 fn create_new_gen(x: &[i64]) -> Vec<i64> {
-    !todo!();
+    x.windows(2)
+        .map(|window| window[1] - window[0])
+        .collect()
 }
 
 //Checks if all elements are zero
@@ -62,5 +64,11 @@ fn are_all_el_zero(x: &[i64]) -> bool {
 
 //Iterates tree back, predicting the next value until first generation
 fn walk_back_tree(x: &[Vec<i64>]) -> i64 {
-    !todo!();
+    x.iter()
+        .rev()
+        .fold(0, |mut acc, gen| {
+            acc += gen.last().unwrap();
+
+            acc
+        })
 }
