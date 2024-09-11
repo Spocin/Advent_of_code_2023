@@ -1,10 +1,12 @@
+#![feature(test)]
+extern crate test;
+
 mod main_spec;
 
 use std::fs;
 use std::path::Path;
 
-const PATH_TO_TEST_INPUT: &str = "day_9_mirage_maintenance/resources/test_input.txt";
-const MAX_LINE_ELEMENTS: u8 = 21;
+const PATH_TO_TEST_INPUT: &str = "day_9_mirage_maintenance/resources/input.txt";
 
 pub fn main() {
     let path = Path::new(PATH_TO_TEST_INPUT);
@@ -21,7 +23,7 @@ pub fn main() {
 //Reads input from given file and parses its content
 fn parse_input(path_to_input: &Path) -> Vec<Vec<i64>> {
     let input = match fs::read_to_string(path_to_input) {
-        Err(err) => panic!("Something wrong with the path! {:?}", err),
+        Err(err) => panic!("Something wrong with the path: {:?} {:?}", path_to_input ,err),
         Ok(input) => input
     };
 

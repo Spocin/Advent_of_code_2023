@@ -1,8 +1,7 @@
-use crate::compute_next_num;
-
 #[cfg(test)]
 mod day_9_tests {
-    use super::*;
+    use test::Bencher;
+    use crate::{compute_next_num, main};
 
     #[test]
     fn should_compute_to_18() {
@@ -29,5 +28,10 @@ mod day_9_tests {
         let res = compute_next_num(input);
 
         assert_eq!(res, 68);
+    }
+
+    #[bench]
+    fn bench_main(b: &mut Bencher) {
+        main();
     }
 }
