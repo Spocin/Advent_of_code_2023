@@ -68,8 +68,9 @@ fn are_all_el_zero(x: &[i64]) -> bool {
 fn walk_back_tree(x: &[Vec<i64>]) -> i64 {
     x.iter()
         .rev()
+        .skip(1)
         .fold(0, |mut acc, gen| {
-            acc += gen.last().unwrap();
+            acc = gen.first().unwrap() - acc;
 
             acc
         })
