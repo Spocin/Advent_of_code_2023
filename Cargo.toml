@@ -1,3 +1,6 @@
+[toolchain]
+channel = 'nightly'
+
 [workspace]
-members = ["day_1_trebuchet", "day_2_cube_conundrum", "day_4_scratchcards", "day_6_wait_for_it", "day_7_camel_cards", "day_8_haunted_wasteland"]
+members = ["day_1_trebuchet", "day_2_cube_conundrum", "day_4_scratchcards", "day_6_wait_for_it", "day_7_camel_cards", "day_8_haunted_wasteland", "day_9_mirage_maintenance"]
 resolver = "2"
