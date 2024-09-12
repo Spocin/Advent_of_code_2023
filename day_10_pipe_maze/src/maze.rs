@@ -3,6 +3,8 @@ use crate::pipe::{Pipe, PipeCoordinates, PipeType};
 pub struct Maze {
     map: Vec<Vec<Option<Pipe>>>,
     starting_pipe_coordinates: PipeCoordinates,
+    width: usize,
+    height: usize,
 }
 
 impl Maze {
@@ -39,9 +41,30 @@ impl Maze {
             Some(val) => val
         };
 
+        let width = map[0].len();
+        let height = map.len();
+
         Maze {
             map,
             starting_pipe_coordinates,
+            width,
+            height,
         }
+    }
+
+    pub fn map(&self) -> &Vec<Vec<Option<Pipe>>> {
+        &self.map
+    }
+
+    pub fn starting_pipe_coordinates(&self) -> &PipeCoordinates {
+        &self.starting_pipe_coordinates
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
     }
 }
