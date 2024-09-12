@@ -16,7 +16,7 @@ impl Maze {
 
             //Go over the chars
             for (x, char) in line.chars().enumerate() {
-                let coordinates = PipeCoordinates{ x, y };
+                let coordinates = PipeCoordinates::new(x,y);
 
                 //Make char into Pipe
                 let pipe = match Pipe::new(coordinates, char) {
@@ -25,7 +25,7 @@ impl Maze {
                 };
 
                 //Surface the starting pipe
-                if start_coordinates_opt.is_none() && pipe.pipe_type == PipeType::START {
+                if start_coordinates_opt.is_none() && pipe.pipe_type() == PipeType::START {
                     start_coordinates_opt = Some(coordinates);
                 }
 
