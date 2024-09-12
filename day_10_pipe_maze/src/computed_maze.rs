@@ -14,6 +14,7 @@ impl ComputedMaze {
             other_way,
             furthest_point_distance
         ) = Self::build_pipes_chain(maze);
+        //Perhaps this can be moved to separate function to postpone computation?
 
          ComputedMaze {
             one_way,

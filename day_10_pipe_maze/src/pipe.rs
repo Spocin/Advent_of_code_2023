@@ -10,13 +10,29 @@ pub enum PipeType {
     START = b'S',
 }
 
+impl PartialEq<PipeType> for &PipeType {
+    fn eq(&self, other: &PipeType) -> bool {
+        self == other
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct PipeCoordinates {
+    pub x: usize,
+    pub y: usize,
+}
+
 pub struct Pipe {
-    coordinates: (usize, usize),
+    coordinates: PipeCoordinates,
     pipe_type: PipeType,
 }
 
 impl Pipe {
-    pub fn new(coordinates: (usize, usize), char: char) -> Pipe {
+    pub fn new(coordinates: PipeCoordinates, char: char) -> Pipe {
         todo!()
+    }
+
+    pub fn pipe_type(&self) -> &PipeType {
+        &self.pipe_type
     }
 }
