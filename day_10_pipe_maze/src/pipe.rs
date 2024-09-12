@@ -1,38 +1,52 @@
-#[repr(u8)]
+#[derive(PartialEq)]
 pub enum PipeType {
-    NS = b'|',
-    EW = b'-',
-    NE = b'L',
-    NW = b'J',
-    SW = b'7',
-    SE = b'F',
-    EMPTY = b'.',
-    START = b'S',
+    NS,
+    EW,
+    NE,
+    NW,
+    SW,
+    SE,
+    EMPTY,
+    START,
 }
 
-impl PartialEq<PipeType> for &PipeType {
-    fn eq(&self, other: &PipeType) -> bool {
-        self == other
+impl PipeType {
+    pub fn from<'a>(c: char) -> Result<PipeType, &'a str> {
+        match c {
+            '|' => Ok(PipeType::NS),
+            '-' => Ok(PipeType::EW),
+            'L' => Ok(PipeType::NE),
+            'J' => Ok(PipeType::NW),
+            '7' => Ok(PipeType::SW),
+            'F' => Ok(PipeType::SE),
+            '.' => Ok(PipeType::EMPTY),
+            'S' => Ok(PipeType::START),
+            _ => Err("Unknown PipeType. Can't convert"),
+        }
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct PipeCoordinates {
     pub x: usize,
     pub y: usize,
 }
 
 pub struct Pipe {
-    coordinates: PipeCoordinates,
-    pipe_type: PipeType,
+    pub coordinates: PipeCoordinates,
+    pub pipe_type: PipeType,
 }
 
 impl Pipe {
-    pub fn new(coordinates: PipeCoordinates, char: char) -> Pipe {
-        todo!()
-    }
+    pub fn new<'a>(coordinates: PipeCoordinates, char: char) -> Result<Pipe, &'a str> {
+        let pipe_type = match PipeType::from(char) {
+            Ok(val) => val,
+            Err(msg) => return Err(msg),
+        };
 
-    pub fn pipe_type(&self) -> &PipeType {
-        &self.pipe_type
+        Ok(Pipe {
+            coordinates,
+            pipe_type,
+        })
     }
 }

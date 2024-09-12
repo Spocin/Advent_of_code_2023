@@ -19,13 +19,13 @@ impl Maze {
                 let coordinates = PipeCoordinates{ x, y };
 
                 //Make char into Pipe
-                let pipe = Pipe::new(
-                    coordinates,
-                    char,
-                );
+                let pipe = match Pipe::new(coordinates, char) {
+                    Ok(pipe) => pipe,
+                    Err(msg) => panic!("Error while building maze: {} at {:?}", msg, coordinates)
+                };
 
                 //Surface the starting pipe
-                if start_coordinates_opt.is_none() && pipe.pipe_type() == PipeType::START {
+                if start_coordinates_opt.is_none() && pipe.pipe_type == PipeType::START {
                     start_coordinates_opt = Some(coordinates);
                 }
 
