@@ -1,8 +1,9 @@
 mod maze;
 mod pipe;
+mod computed_maze;
 
+use crate::computed_maze::ComputedMaze;
 use crate::maze::Maze;
-use crate::pipe::Pipe;
 use std::fs;
 use std::path::Path;
 
@@ -12,9 +13,9 @@ fn main() {
     let path = Path::new(PATH_TO_TEST_INPUT);
     let data = parse_input(path);
 
-    let furthest_pipe = find_furthest_pipe(&data);
+    let furthest_distance = find_furthest_pipe_distance(&data);
 
-    println!("Furthest point is: ({}) steps away from start", furthest_pipe.get_steps());
+    println!("Furthest point is: ({}) steps away from start", furthest_distance);
 }
 
 //Reads input from given file
@@ -25,20 +26,16 @@ fn parse_input(path_to_input: &Path) -> String {
     }
 }
 
-fn find_furthest_pipe(input: &String) -> Pipe {
+fn find_furthest_pipe_distance(input: &String) -> u64 {
     let maze = Maze::new(input);
-    maze.compute_distances();
-    maze.find_and_save_furthest_pipe();
+    let computed_maze = ComputedMaze::new(&maze);
 
-    match maze.get_furthest_pipe() {
-        None => panic!("No furthest pipe found!"),
-        Some(point) => point
-    }
+    computed_maze.furthest_point_distance
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::find_furthest_pipe;
+    use crate::find_furthest_pipe_distance;
 
     #[test]
     fn test_1() {
@@ -50,9 +47,9 @@ mod tests {
             .....
         "###.to_string();
 
-        let res_pipe = find_furthest_pipe(&input);
+        let res_pipe = find_furthest_pipe_distance(&input);
 
-        assert_eq!(res_pipe.get_steps(), 4);
+        assert_eq!(res_pipe, 4);
     }
 
     #[test]
@@ -65,8 +62,8 @@ mod tests {
             LJ...
         ""###.to_string();
 
-        let res_pipe = find_furthest_pipe(&input);
+        let res_pipe = find_furthest_pipe_distance(&input);
 
-        assert_eq!(res_pipe.get_steps(), 8);
+        assert_eq!(res_pipe, 8);
     }
 }

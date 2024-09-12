@@ -13,16 +13,10 @@ pub enum PipeType {
 pub struct Pipe {
     coordinates: (usize, usize),
     pipe_type: PipeType,
-    steps: Option<u64>,
-    was_visited: bool
 }
 
 impl Pipe {
     pub fn new(coordinates: (usize, usize), char: char) -> Pipe {
-        todo!()
-    }
-
-    pub(crate) fn get_steps() -> u64 {
         todo!()
     }
 }
