@@ -17,7 +17,7 @@ impl PartialEq<PipeType> for &PipeType {
 }
 
 impl PipeType {
-    pub fn from<'a>(c: char) -> Result<PipeType, &'a str> {
+    pub fn from(c: char) -> Result<PipeType, String> {
         match c {
             '|' => Ok(PipeType::NS),
             '-' => Ok(PipeType::EW),
@@ -27,7 +27,7 @@ impl PipeType {
             'F' => Ok(PipeType::SE),
             '.' => Ok(PipeType::EMPTY),
             'S' => Ok(PipeType::START),
-            _ => Err("Unknown PipeType. Can't convert"),
+            _ => Err(format!("Unknown PipeType: {}. Can't convert", c)),
         }
     }
 }
@@ -50,7 +50,7 @@ pub struct Pipe {
 }
 
 impl Pipe {
-    pub fn new<'a>(coordinates: PipeCoordinates, char: char) -> Result<Pipe, &'a str> {
+    pub fn new(coordinates: PipeCoordinates, char: char) -> Result<Pipe, String> {
         let pipe_type = match PipeType::from(char) {
             Ok(val) => val,
             Err(msg) => return Err(msg),

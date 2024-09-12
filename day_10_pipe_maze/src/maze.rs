@@ -12,6 +12,7 @@ impl Maze {
 
         //Go over the lines
         for (y, line) in input.lines().enumerate() {
+            println!("{}", line);
             let mut line_pipes: Vec<Pipe> = Vec::with_capacity(line.len());
 
             //Go over the chars

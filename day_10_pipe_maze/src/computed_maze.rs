@@ -1,13 +1,13 @@
 use crate::maze::Maze;
 use crate::pipe::Pipe;
 
-pub struct ComputedMaze<'of_struct> {
-    one_way: Vec<&'of_struct Pipe>,
-    other_way: Vec<&'of_struct Pipe>,
-    pub furthest_point_distance: u64,
+pub struct ComputedMaze<'a> {
+    one_way: Vec<&'a Pipe>,
+    other_way: Vec<&'a Pipe>,
+    furthest_point_distance: u64,
 }
 
-impl ComputedMaze {
+impl ComputedMaze<'_> {
     pub fn new(maze: &Maze) -> ComputedMaze {
         let (
             one_way,
@@ -31,5 +31,9 @@ impl ComputedMaze {
         u64
     ) {
         todo!()
+    }
+
+    pub fn furthest_point_distance(&self) -> u64 {
+        self.furthest_point_distance
     }
 }

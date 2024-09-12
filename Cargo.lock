@@ -5,6 +5,9 @@ version = 3
 [[package]]
 name = "day_10_pipe_maze"
 version = "0.1.0"
+dependencies = [
+ "indoc",
+]
 
 [[package]]
 name = "day_1_trebuchet"
