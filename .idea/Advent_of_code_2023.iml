@@ -15,6 +15,8 @@
       <sourceFolder url="file://$MODULE_DIR$/day_7_camel_cards/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/day_8_haunted_wasteland/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/day_9_mirage_maintenance/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_10_pipe_maze/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_10_pipe_maze/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
