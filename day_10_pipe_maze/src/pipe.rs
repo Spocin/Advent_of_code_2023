@@ -6,22 +6,21 @@ pub enum PipeType {
     NW,
     SW,
     SE,
-    EMPTY,
     START,
 }
 
 impl PipeType {
-    pub fn from(c: char) -> Result<PipeType, String> {
+    pub fn from(c: char) -> Option<PipeType> {
         match c {
-            '|' => Ok(PipeType::NS),
-            '-' => Ok(PipeType::EW),
-            'L' => Ok(PipeType::NE),
-            'J' => Ok(PipeType::NW),
-            '7' => Ok(PipeType::SW),
-            'F' => Ok(PipeType::SE),
-            '.' => Ok(PipeType::EMPTY),
-            'S' => Ok(PipeType::START),
-            _ => Err(format!("Unknown PipeType: {}. Can't convert", c)),
+            '|' => Some(PipeType::NS),
+            '-' => Some(PipeType::EW),
+            'L' => Some(PipeType::NE),
+            'J' => Some(PipeType::NW),
+            '7' => Some(PipeType::SW),
+            'F' => Some(PipeType::SE),
+            'S' => Some(PipeType::START),
+            '.' => None,
+            _ => panic!("Unknown PipeType: {}. Can't convert", c),
         }
     }
 }
@@ -44,13 +43,13 @@ pub struct Pipe {
 }
 
 impl Pipe {
-    pub fn new(coordinates: PipeCoordinates, char: char) -> Result<Pipe, String> {
+    pub fn new(coordinates: PipeCoordinates, char: char) -> Option<Pipe> {
         let pipe_type = match PipeType::from(char) {
-            Ok(val) => val,
-            Err(msg) => return Err(msg),
+            Some(pipe_type) => pipe_type,
+            None => return None
         };
 
-        Ok(Pipe {
+        Some(Pipe {
             coordinates,
             pipe_type,
         })
