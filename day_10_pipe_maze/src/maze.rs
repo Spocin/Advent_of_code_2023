@@ -26,7 +26,7 @@ impl Maze {
                 };
 
                 //Surface the starting pipe
-                if start_coordinates_opt.is_none() && pipe.pipe_type() == PipeType::START {
+                if start_coordinates_opt.is_none() && *pipe.pipe_type() == PipeType::START {
                     start_coordinates_opt = Some(coordinates);
                 }
 

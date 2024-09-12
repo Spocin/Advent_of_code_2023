@@ -10,12 +10,6 @@ pub enum PipeType {
     START,
 }
 
-impl PartialEq<PipeType> for &PipeType {
-    fn eq(&self, other: &PipeType) -> bool {
-        self == other
-    }
-}
-
 impl PipeType {
     pub fn from(c: char) -> Result<PipeType, String> {
         match c {
