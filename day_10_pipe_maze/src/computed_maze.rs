@@ -3,9 +3,7 @@ use crate::maze::Maze;
 use crate::pipe::PipeType::*;
 use crate::pipe::{Pipe, PipeCoordinates, PipeType};
 
-pub struct ComputedMaze<'a> {
-    one_way: Vec<&'a Pipe>,
-    other_way: Vec<&'a Pipe>,
+pub struct ComputedMaze {
     furthest_point_distance: u64,
 }
 
@@ -36,7 +34,7 @@ impl SearchDirection {
     }
 }
 
-impl ComputedMaze<'_> {
+impl ComputedMaze {
     /// Walks pipes starting from S in both directions.
     /// Stops when both iterators are on the same pipe.
     pub fn new(maze: &Maze) -> ComputedMaze {
@@ -55,34 +53,30 @@ impl ComputedMaze<'_> {
         one_way.push(Self::find_next_pipe(maze, one_way[0], None));
         other_way.push(Self::find_next_pipe(maze, other_way[0], Some(one_way[1].coordinates())));
 
-        println!("First way: {:?}", one_way);
-        println!("Second way: {:?}", other_way);
-
-        todo!();
-
         let mut first_ptr = 1;
         let mut second_ptr = 1;
 
         //Walk pipes until both pointers point to same coordinates
         while *one_way[first_ptr].coordinates() != *other_way[second_ptr].coordinates() {
-            //Find first pipe adjacent to S
-
-
-            //Find second pipe adjacent to S
-
-            //Push first pipe to vec
-            //Push second pipe to vec
+            one_way.push(Self::find_next_pipe(
+                maze,
+                one_way[first_ptr],
+                Some(one_way[first_ptr - 1].coordinates()))
+            );
+            other_way.push(Self::find_next_pipe(
+                maze,
+                other_way[second_ptr],
+                Some(other_way[second_ptr - 1].coordinates()))
+            );
 
             first_ptr += 1;
             second_ptr += 1;
         }
 
-        todo!();
+        let furthest_point_distance = u64::try_from(one_way.len()).unwrap() - 1;
 
         ComputedMaze {
-            one_way,
-            other_way,
-            furthest_point_distance: one_way.len() as u64,
+            furthest_point_distance,
         }
     }
 
@@ -108,9 +102,7 @@ impl ComputedMaze<'_> {
 
         //Check East
         if curr_coords.x() != maze.width() {
-            println!("Curr: {:?}", curr_coords);
             if let Some(east_pipe) = Self::check_neighbour(EAST, maze, selected_pipe, coordinates_to_ignore_opt) {
-                println!("Returned East: {:?}", east_pipe);
                 return east_pipe;
             }
         }
@@ -118,7 +110,6 @@ impl ComputedMaze<'_> {
         //Check South
         if curr_coords.y() != maze.height() {
             if let Some(south_pipe) = Self::check_neighbour(SOUTH, maze, selected_pipe, coordinates_to_ignore_opt) {
-                println!("Returned South: {:?}", south_pipe);
                 return south_pipe;
             }
         }
