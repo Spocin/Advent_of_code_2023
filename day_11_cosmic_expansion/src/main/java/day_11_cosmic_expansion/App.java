@@ -3,7 +3,6 @@ package day_11_cosmic_expansion;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-
 public class App {
     static String inputFileName = "input.txt";
 

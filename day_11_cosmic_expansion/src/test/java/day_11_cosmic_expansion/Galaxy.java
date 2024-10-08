@@ -1,0 +1,33 @@
+package day_11_cosmic_expansion;
+
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class Galaxy {
+
+    @Test
+    public void shouldCorrectlyExpandMap() throws IOException {
+        var testGalaxy = App.loadGalaxyFromFile("test_input.txt");
+
+        testGalaxy.expandGalaxyMap();
+
+        var expected = """
+                ....#........
+                .........#...
+                #............
+                .............
+                .............
+                ........#....
+                .#...........
+                ............#
+                .............
+                .............
+                .........#...
+                #....#.......""";
+
+        assertEquals(testGalaxy.getMapAsString(), expected);
+    }
+}
