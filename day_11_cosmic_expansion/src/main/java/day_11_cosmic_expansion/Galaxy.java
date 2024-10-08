@@ -93,7 +93,11 @@ public class Galaxy {
         var sb = new StringBuilder();
 
         for (var line : galaxyMap) {
-            sb.append(line.toString()).append("\n");
+            for (var character : line) {
+                sb.append(character);
+            }
+
+            sb.append("\n");
         }
 
         return sb.toString();
