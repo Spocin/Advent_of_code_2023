@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
-    <exclude-output />
-    <content url="file://$MODULE_DIR$">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$" dumb="true">
+      <sourceFolder url="file://$MODULE_DIR$/day_11_cosmic_expansion/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_11_cosmic_expansion/src/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/day_1_trebuchet/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/day_2_cube_cundurum/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/day_2_cube_conundrum/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_2_cube_cundurum/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/day_4_scratchcards/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/day_5_if_you_give_a_seed_a_fertilizer/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/day_6_wait_for_it/src" isTestSource="false" />
@@ -15,9 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/day_7_camel_cards/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/day_8_haunted_wasteland/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/day_9_mirage_maintenance/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
