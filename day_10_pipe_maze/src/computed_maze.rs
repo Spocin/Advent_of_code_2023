@@ -49,6 +49,8 @@ impl ComputedMaze {
         one_way.push(starting_pipe);
         other_way.push(starting_pipe);
 
+        todo!(Create fn to write build pipe to file);
+
         //Find pipes adjacent to staring pipe
         one_way.push(Self::find_next_pipe(maze, one_way[0], None));
         other_way.push(Self::find_next_pipe(maze, other_way[0], Some(one_way[1].coordinates())));
