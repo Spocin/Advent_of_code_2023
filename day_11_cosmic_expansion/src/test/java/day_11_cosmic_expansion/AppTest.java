@@ -1,19 +1,36 @@
 package day_11_cosmic_expansion;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest {
+import java.io.IOException;
 
-    /**
-     * Rigorous Test :-)
-     */
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class AppTest {
+    static String testInputFileName = "test_input.txt";
+
     @Test
-    public void shouldAnswerWithTrue() {
+    public void shouldLoadTestInput() throws IOException {
+        var galaxy = App.loadGalaxyFromFile(testInputFileName);
+
+        var expected = """
+                ...#......
+                .......#..
+                #.........
+                ..........
+                ......#...
+                .#........
+                .........#
+                ..........
+                .......#..
+                #...#.....""";
+
+        assertEquals(galaxy.getInput(), expected);
+    }
+
+    @Test
+    public void galaxyShouldExpandCorrectly() {
         assertTrue(true);
     }
 }
