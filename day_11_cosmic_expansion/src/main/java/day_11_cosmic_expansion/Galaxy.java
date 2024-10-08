@@ -1,7 +1,6 @@
 package day_11_cosmic_expansion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,16 +43,17 @@ public class Galaxy {
 
         //Add rows at these indexes
         for (int i = 0; i < rowsIndexesToExpand.length; i++) {
-            var emptyRow = (ArrayList<Character>) IntStream
-                    .range(0, galaxyMap.size())
-                    .mapToObj(el -> '.')
-                    .toList();
+            var emptyRow = new ArrayList<Character>(galaxyMap.getFirst().size());
+
+            for (int j = 0; j < galaxyMap.getFirst().size(); j++) {
+                emptyRow.add(j, '.');
+            }
 
             galaxyMap.add(rowsIndexesToExpand[i], emptyRow);
 
             //Increment feature rows to hit correct position
             for (int j = i; j < rowsIndexesToExpand.length; j++) {
-                rowsIndexesToExpand[j] = rowsIndexesToExpand[j + 1];
+                rowsIndexesToExpand[j] = rowsIndexesToExpand[j] + 1;
             }
         }
     }
@@ -61,25 +61,21 @@ public class Galaxy {
     private void expandColumns() {
         //Get indexes of columns to add at
         var columnsIndexesToExpand = IntStream
-                .range(0, galaxyMap.getFirst().size())
+                .range(0, galaxyMap.getFirst().size() - 1)
                 .filter(idx -> galaxyMap
                         .stream()
                         .map(line -> line.get(idx))
                         .allMatch(el -> el == '.'))
                 .toArray();
 
-        if (columnsIndexesToExpand.length == 0) {
-            return;
-        }
-
         for (int i = 0; i < columnsIndexesToExpand.length; i++) {
             for (var characters : galaxyMap) {
-                characters.add(i, '.');
+                characters.add(columnsIndexesToExpand[i], '.');
             }
 
             //Increment feature columns to hit correct position
             for (int j = i; j < columnsIndexesToExpand.length; j++) {
-                columnsIndexesToExpand[j] = columnsIndexesToExpand[j + 1];
+                columnsIndexesToExpand[j] = columnsIndexesToExpand[j] + 1;
             }
         }
     }

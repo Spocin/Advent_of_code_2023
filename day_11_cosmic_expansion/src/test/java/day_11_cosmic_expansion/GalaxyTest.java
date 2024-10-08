@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Galaxy {
+public class GalaxyTest {
 
     @Test
     public void shouldCorrectlyExpandMap() throws IOException {
